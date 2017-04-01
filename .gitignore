@@ -57,9 +57,22 @@
 # *.sdc # I want those timing files
 
 # ignore Quartus II generated folders
-*/db/
-*/incremental_db/
-*/simulation/
-*/timing/
-*/testbench/
-*/*_sim/
+db/*
+incremental_db/*
+simulation/*
+timing/*
+testbench/*
+*_sim/*
+
+software/nes_nios/obj/*
+software/nes_nios_bsp/obj/*
+software/*
+!software/nes_nios/*.c
+!software/nes_nios/*.h
+software/nes_nios/
+
+nes_nios/synthesis/*
+
+*.cdf
+*.elf
+*.objdump

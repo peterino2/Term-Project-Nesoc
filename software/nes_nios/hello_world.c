@@ -4,15 +4,16 @@
 #include <stdlib.h>
 #include "altera_avalon_timer_regs.h"
 #include "altera_avalon_timer.h"
+
 #define TEST_TIMER_BASE 0x0200020 	// timer base
 #define FRAME_BUFF_SIZE  61440//240*256
 int main()
 {
-    printf("SDRAM ONLINE MY DUDE!\n");
+    printf("This program is running from SDRAM!\n");
     void* frameBuffer =  malloc(61440);
     void* secondMalloc = malloc(10000); // lets allocate 10 megabytes for funzies
     int count = 0;
-    printf("aww shiet son we got malloc online : %08x\n", (unsigned int)frameBuffer);
+    printf("malloc working returned: %08x\n", (unsigned int)frameBuffer);
     printf("huge 10MB block at: %08x", (unsigned int)secondMalloc);
     void* scanstart = (void*)0x02008000; // test to see how long it takes to copy 256 bytes from
     // sdram to onchip

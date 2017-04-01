@@ -64,12 +64,10 @@ timing/*
 testbench/*
 *_sim/*
 
-software/nes_nios/obj/*
-software/nes_nios_bsp/obj/*
-software/*
+software/nes_nios_bsp/*
+software/nes_nios/*
 !software/nes_nios/*.c
 !software/nes_nios/*.h
-software/nes_nios/
 
 nes_nios/synthesis/*
 

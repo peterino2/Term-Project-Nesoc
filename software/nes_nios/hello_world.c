@@ -5,34 +5,38 @@
 #include "altera_avalon_timer_regs.h"
 #include "altera_avalon_timer.h"
 
-#define TEST_TIMER_BASE 0x0200020 	// timer base
+#define BIT0 1
+#define BIT1 2
+#define BIT2 4
+#define BIT3 8
+
+#define BIT4 16
+#define BIT5 32
+#define BIT6 64
+#define BIT7 128
+
+#define VGA_STREAM_OUT 0x02000040 // base of the vga stream
+#define VGA_WRITE BIT6
+#define VGA_BUFF_SEND(C_DAT) IOWR_ALTERA_AVALON_PIO_DATA(0x2000010, BIT7|C_DAT|VGA_WRITE)
+#define VGA_STREAM_END(foo) IOWR_ALTERA_AVALON_PIO_DATA(0x2000010, ~(VGA_WRITE|BIT7))
+
+#define NES_COLOURS_MAX 64
+
 #define FRAME_BUFF_SIZE  61440//240*256
 int main()
 {
+	unsigned int count =0;
+    unsigned int test_cdat = 0;
     printf("This program is running from SDRAM!\n");
-    void* frameBuffer =  malloc(61440);
-    void* secondMalloc = malloc(10000); // lets allocate 10 megabytes for funzies
-    int count = 0;
-    printf("malloc working returned: %08x\n", (unsigned int)frameBuffer);
-    printf("huge 10MB block at: %08x", (unsigned int)secondMalloc);
-    void* scanstart = (void*)0x02008000; // test to see how long it takes to copy 256 bytes from
     // sdram to onchip
     // onchip starts at 0x0200_8000 for 256 bytes ends at 0x0200_80FF
-    unsigned int i = 1;
-    unsigned int tv_0 = 0;	//timer value 0
-    unsigned int tv_1 = 0;	// timer value 1
-    while(1) {
-    	IOWR_ALTERA_AVALON_TIMER_SNAPL( 0x02000020, 0xFFFF);
-    	tv_0 = IORD_ALTERA_AVALON_TIMER_SNAPL(0x02000020);
 
-    	for(i = 0;i< 256;i++){
-    		*(int*)(scanstart+i) = *(int*)(frameBuffer + i);
-    	}
-    	IOWR_ALTERA_AVALON_TIMER_SNAPL( 0x02000020, 0xFFFF);
-    	tv_1 = IORD_ALTERA_AVALON_TIMER_SNAPL(0x02000020);
-    	printf("%u %u %u\n", tv_0, tv_1, tv_1 - tv_0);
-    	IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, count & 0x01);
-        count++;
+    while(1) {
+        test_cdat++;
+    	if(test_cdat > 63)
+    		test_cdat = 0;
+    	VGA_STREAM_END();
+    	VGA_BUFF_SEND(test_cdat);
     }
 
   return 0;

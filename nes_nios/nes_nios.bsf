@@ -188,7 +188,7 @@ agreement for further details.
 		(text "export" (rect 165 355 366 720)(font "Arial" (color 0 0 0)))
 		(text "vga_stream_read" (rect 58 371 206 755)(font "Arial" (color 128 0 0)(font_size 9)))
 		(text "export" (rect 165 395 366 800)(font "Arial" (color 0 0 0)))
-		(text " system " (rect 349 416 746 842)(font "Arial" ))
+		(text " nes_nios " (rect 343 416 746 842)(font "Arial" ))
 		(line (pt 160 32)(pt 224 32)(line_width 1))
 		(line (pt 224 32)(pt 224 416)(line_width 1))
 		(line (pt 160 416)(pt 224 416)(line_width 1))

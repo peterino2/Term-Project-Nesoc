@@ -17,8 +17,7 @@ module vga_stream(
 logic [5:0]scanline[255:0];
 logic [8:0]coloursDecode[63:0];
 logic [8:0]rgb_buf;
-logic [5:0]c_code_vga = 'h27;
-logic [5:0]dummy;
+logic [5:0]c_code_vga;
 logic [7:0]pix_ptr_x;
 logic [7:0]pix_ptr_y;
 
@@ -42,7 +41,7 @@ nes_video_dc_fifo dc_fifo(
 	.read(vga_read),
 	.write(cpu_write),
 	.clk_read(vga_clk),
-	.dout(dummy),
+	.dout(c_code_vga),
 	.reset, 
 	.done
 );

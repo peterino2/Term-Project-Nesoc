@@ -9,6 +9,6 @@
   </columns>
  </systemtable>
  <library
-   expandedCategories="Library/Processors and Peripherals,Library/Interface Protocols/PCI Express/QSYS Example Designs,Library/Processors and Peripherals/Peripherals,Library/Interface Protocols,Library,Library/Interface Protocols/PCI Express" />
- <window width="1696" height="1026" x="-8" y="-8" />
+   expandedCategories="Library/Qsys Interconnect/Interrupt,Library/Basic Functions,Library/Basic Functions/Bridges and Adaptors,Library/Processors and Peripherals,Library/Basic Functions/Simulation; Debug and Verification/Simulation,Library,Library/Processors and Peripherals/Peripherals,Library/Basic Functions/Bridges and Adaptors/Interrupt,Library/Processors and Peripherals/Inter-Process Communication,Library/Basic Functions/Simulation; Debug and Verification,Library/Qsys Interconnect" />
+ <window width="1680" height="1010" x="0" y="0" />
 </preferences>

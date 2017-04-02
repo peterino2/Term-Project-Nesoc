@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE22F17C6
-set_global_assignment -name TOP_LEVEL_ENTITY vga_stream_shim
+set_global_assignment -name TOP_LEVEL_ENTITY nes_clean_top
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:38:48  MARCH 31, 2017"
 set_global_assignment -name LAST_QUARTUS_VERSION "16.1.0 Lite Edition"
@@ -77,27 +77,16 @@ set_location_assignment PIN_E15 -to GPIO_2_IN[0]
 set_location_assignment PIN_E16 -to GPIO_2_IN[1]
 set_location_assignment PIN_M16 -to GPIO_2_IN[2]
 set_location_assignment PIN_A8 -to GPIO_0_IN[0]
-set_location_assignment PIN_D3 -to GPIO_0[0]
 set_location_assignment PIN_B8 -to GPIO_0_IN[1]
-set_location_assignment PIN_C3 -to GPIO_0[1]
 set_location_assignment PIN_A2 -to GPIO_0[2]
-set_location_assignment PIN_A3 -to GPIO_0[3]
 set_location_assignment PIN_B3 -to GPIO_0[4]
-set_location_assignment PIN_B4 -to GPIO_0[5]
 set_location_assignment PIN_A4 -to GPIO_0[6]
-set_location_assignment PIN_B5 -to GPIO_0[7]
 set_location_assignment PIN_A5 -to GPIO_0[8]
-set_location_assignment PIN_D5 -to GPIO_0[9]
 set_location_assignment PIN_B6 -to GPIO_0[10]
-set_location_assignment PIN_A6 -to GPIO_0[11]
 set_location_assignment PIN_B7 -to GPIO_0[12]
-set_location_assignment PIN_D6 -to GPIO_0[13]
 set_location_assignment PIN_A7 -to GPIO_0[14]
-set_location_assignment PIN_C6 -to GPIO_0[15]
 set_location_assignment PIN_C8 -to GPIO_0[16]
-set_location_assignment PIN_E6 -to GPIO_0[17]
 set_location_assignment PIN_E7 -to GPIO_0[18]
-set_location_assignment PIN_D8 -to GPIO_0[19]
 set_location_assignment PIN_E8 -to GPIO_0[20]
 set_location_assignment PIN_F8 -to GPIO_0[21]
 set_location_assignment PIN_F9 -to GPIO_0[22]
@@ -243,4 +232,15 @@ set_global_assignment -name CDF_FILE output_files/Chain1.cdf
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_D3 -to RED[0]
+set_location_assignment PIN_C3 -to RED[1]
+set_location_assignment PIN_A3 -to RED[2]
+set_location_assignment PIN_B4 -to GREEN[0]
+set_location_assignment PIN_B5 -to GREEN[1]
+set_location_assignment PIN_D5 -to GREEN[2]
+set_location_assignment PIN_A6 -to BLUE[0]
+set_location_assignment PIN_D6 -to BLUE[1]
+set_location_assignment PIN_C6 -to BLUE[2]
+set_location_assignment PIN_E6 -to HSYNC
+set_location_assignment PIN_D8 -to VSYNC
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

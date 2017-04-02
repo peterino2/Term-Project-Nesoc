@@ -5,6 +5,7 @@ module nes_nios (
 	nes_cpu_clk,
 	ppu_clk,
 	ppu_slow_clk,
+	ppu_stream_in_export,
 	sdram_addr,
 	sdram_ba,
 	sdram_cas_n,
@@ -17,13 +18,14 @@ module nes_nios (
 	shift_clk,
 	vga_clk,
 	vga_stream_out_export,
-	ppu_stream_in_export);	
+	vga_stream_read_export);	
 
 	input		clk_50_clk;
 	output	[7:0]	led_export;
 	output		nes_cpu_clk;
 	output		ppu_clk;
 	output		ppu_slow_clk;
+	input	[5:0]	ppu_stream_in_export;
 	output	[12:0]	sdram_addr;
 	output	[1:0]	sdram_ba;
 	output		sdram_cas_n;
@@ -36,5 +38,5 @@ module nes_nios (
 	output		shift_clk;
 	output		vga_clk;
 	output	[7:0]	vga_stream_out_export;
-	input	[5:0]	ppu_stream_in_export;
+	input		vga_stream_read_export;
 endmodule

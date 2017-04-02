@@ -22,14 +22,15 @@ int main()
     unsigned int tv_0 = 0;	//timer value 0
     unsigned int tv_1 = 0;	// timer value 1
     while(1) {
-    	IOWR_ALTERA_AVALON_TIMER_SNAPL(TEST_TIMER_BASE,0);
-    	tv_0 = IORD_ALTERA_AVALON_TIMER_SNAPL(TEST_TIMER_BASE); // read from snap_l timer register
+    	IOWR_ALTERA_AVALON_TIMER_SNAPL( 0x02000020, 0xFFFF);
+    	tv_0 = IORD_ALTERA_AVALON_TIMER_SNAPL(0x02000020);
+
     	for(i = 0;i< 256;i++){
     		*(int*)(scanstart+i) = *(int*)(frameBuffer + i);
     	}
-    	IOWR_ALTERA_AVALON_TIMER_SNAPL(TEST_TIMER_BASE,0);
-    	tv_1 = IORD_ALTERA_AVALON_TIMER_SNAPL(TEST_TIMER_BASE);// read from snap_l timer register
-    	printf("time taken to copy 256 Bytes (in clock cycles ): %d\n", (tv_1 - tv_0) );
+    	IOWR_ALTERA_AVALON_TIMER_SNAPL( 0x02000020, 0xFFFF);
+    	tv_1 = IORD_ALTERA_AVALON_TIMER_SNAPL(0x02000020);
+    	printf("%u %u %u\n", tv_0, tv_1, tv_1 - tv_0);
     	IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, count & 0x01);
         count++;
     }

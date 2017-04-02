@@ -1,9 +1,6 @@
 /*
 	PPU.sv
 */
-
-`include "nessoc.svh"
-
 module ppu_top();
 
 endmodule
@@ -28,15 +25,11 @@ module ppu_core( 				// PPU Component
 
 
 // All this does right now is output a colour
-VGA_STREAM_DATA = 'h27;
+assign VGA_STREAM_DATA = 'h27;
 
 logic [9:0]pixel_x;
 logic [9:0]pixel_y; // 
-logic	
 
-always_comb begin 
-	
-end
 // ========= PIXEL GENERATOR FSM ==============
 
 endmodule

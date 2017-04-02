@@ -164,6 +164,22 @@
          type = "String";
       }
    }
+   element vga_stream_read
+   {
+      datum _sortIndex
+      {
+         value = "10";
+         type = "int";
+      }
+   }
+   element vga_stream_read.s1
+   {
+      datum baseAddress
+      {
+         value = "33554432";
+         type = "String";
+      }
+   }
    element vid_stream_in
    {
       datum _sortIndex
@@ -247,6 +263,11 @@
  <interface
    name="vga_stream_out"
    internal="vid_stream_out.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="vga_stream_read"
+   internal="vga_stream_read.external_connection"
    type="conduit"
    dir="end" />
  <module name="altpll_0" kind="altpll" version="16.1" enabled="1">
@@ -442,7 +463,7 @@
   <parameter name="dataAddrWidth" value="26" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x0' end='0x2000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='vid_stream_out.s1' start='0x2000010' end='0x2000020' type='altera_avalon_pio.s1' /><slave name='timer.s1' start='0x2000020' end='0x2000040' type='altera_avalon_timer.s1' /><slave name='vid_stream_in.s1' start='0x2000040' end='0x2000050' type='altera_avalon_pio.s1' /><slave name='onchip_memory2.s1' start='0x2008000' end='0x200BE80' type='altera_avalon_onchip_memory2.s1' /><slave name='cpu.debug_mem_slave' start='0x2010800' end='0x2011000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='altpll_0.pll_slave' start='0x2011010' end='0x2011020' type='altpll.pll_slave' /><slave name='led.s1' start='0x2011020' end='0x2011030' type='altera_avalon_pio.s1' /><slave name='jtag_uart.avalon_jtag_slave' start='0x2011030' end='0x2011038' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x0' end='0x2000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='vga_stream_read.s1' start='0x2000000' end='0x2000010' type='altera_avalon_pio.s1' /><slave name='vid_stream_out.s1' start='0x2000010' end='0x2000020' type='altera_avalon_pio.s1' /><slave name='timer.s1' start='0x2000020' end='0x2000040' type='altera_avalon_timer.s1' /><slave name='vid_stream_in.s1' start='0x2000040' end='0x2000050' type='altera_avalon_pio.s1' /><slave name='onchip_memory2.s1' start='0x2008000' end='0x200BE80' type='altera_avalon_onchip_memory2.s1' /><slave name='cpu.debug_mem_slave' start='0x2010800' end='0x2011000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='altpll_0.pll_slave' start='0x2011010' end='0x2011020' type='altpll.pll_slave' /><slave name='led.s1' start='0x2011020' end='0x2011030' type='altera_avalon_pio.s1' /><slave name='jtag_uart.avalon_jtag_slave' start='0x2011030' end='0x2011038' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -481,14 +502,14 @@
   <parameter name="icache_tagramBlockType" value="Automatic" />
   <parameter name="impl" value="Tiny" />
   <parameter name="instAddrWidth" value="26" />
-  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x0' end='0x2000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='vid_stream_out.s1' start='0x2000010' end='0x2000020' type='altera_avalon_pio.s1' /><slave name='timer.s1' start='0x2000020' end='0x2000040' type='altera_avalon_timer.s1' /><slave name='vid_stream_in.s1' start='0x2000040' end='0x2000050' type='altera_avalon_pio.s1' /><slave name='onchip_memory2.s1' start='0x2008000' end='0x200BE80' type='altera_avalon_onchip_memory2.s1' /><slave name='cpu.debug_mem_slave' start='0x2010800' end='0x2011000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='led.s1' start='0x2011020' end='0x2011030' type='altera_avalon_pio.s1' /></address-map>]]></parameter>
+  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x0' end='0x2000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='vid_stream_out.s1' start='0x2000010' end='0x2000020' type='altera_avalon_pio.s1' /><slave name='vid_stream_in.s1' start='0x2000040' end='0x2000050' type='altera_avalon_pio.s1' /><slave name='onchip_memory2.s1' start='0x2008000' end='0x200BE80' type='altera_avalon_onchip_memory2.s1' /><slave name='cpu.debug_mem_slave' start='0x2010800' end='0x2011000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='led.s1' start='0x2011020' end='0x2011030' type='altera_avalon_pio.s1' /></address-map>]]></parameter>
   <parameter name="instructionMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="instructionMasterHighPerformanceMapParam" value="" />
   <parameter name="instruction_master_high_performance_paddr_base" value="0" />
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="3" />
+  <parameter name="internalIrqMaskSystemInfo" value="7" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -707,6 +728,24 @@
   <parameter name="watchdogPulse" value="2" />
  </module>
  <module
+   name="vga_stream_read"
+   kind="altera_avalon_pio"
+   version="16.1"
+   enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="true" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="1" />
+ </module>
+ <module
    name="vid_stream_in"
    kind="altera_avalon_pio"
    version="16.1"
@@ -788,11 +827,6 @@
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection kind="avalon" version="16.1" start="cpu.data_master" end="timer.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x02000020" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
  <connection
    kind="avalon"
    version="16.1"
@@ -809,6 +843,20 @@
    end="vid_stream_in.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x02000040" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="16.1" start="cpu.data_master" end="timer.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x02000020" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.1"
+   start="cpu.data_master"
+   end="vga_stream_read.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x02000000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -851,15 +899,6 @@
    kind="avalon"
    version="16.1"
    start="cpu.instruction_master"
-   end="timer.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x02000020" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="16.1"
-   start="cpu.instruction_master"
    end="vid_stream_out.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x02000010" />
@@ -893,6 +932,11 @@
    kind="clock"
    version="16.1"
    start="clock_50.clk"
+   end="vga_stream_read.clk" />
+ <connection
+   kind="clock"
+   version="16.1"
+   start="clock_50.clk"
    end="onchip_memory2.clk1" />
  <connection
    kind="clock"
@@ -904,6 +948,13 @@
  </connection>
  <connection kind="interrupt" version="16.1" start="cpu.irq" end="timer.irq">
   <parameter name="irqNumber" value="1" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="16.1"
+   start="cpu.irq"
+   end="vga_stream_read.irq">
+  <parameter name="irqNumber" value="2" />
  </connection>
  <connection
    kind="reset"
@@ -945,6 +996,11 @@
    version="16.1"
    start="clock_50.clk_reset"
    end="vid_stream_in.reset" />
+ <connection
+   kind="reset"
+   version="16.1"
+   start="clock_50.clk_reset"
+   end="vga_stream_read.reset" />
  <connection
    kind="reset"
    version="16.1"

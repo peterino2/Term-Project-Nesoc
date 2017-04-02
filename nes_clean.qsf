@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE22F17C6
-set_global_assignment -name TOP_LEVEL_ENTITY nes_clean_top
+set_global_assignment -name TOP_LEVEL_ENTITY vga_stream_shim
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:38:48  MARCH 31, 2017"
 set_global_assignment -name LAST_QUARTUS_VERSION "16.1.0 Lite Edition"
@@ -228,13 +228,17 @@ set_location_assignment PIN_K1 -to sdram_cond_dq[15]
 set_location_assignment PIN_L1 -to sdram_cond_cas_n
 set_location_assignment PIN_L2 -to sdram_cond_ras_n
 set_location_assignment PIN_C2 -to sdram_cond_we_n
+set_location_assignment PIN_R4 -to sdram_clk
+set_location_assignment PIN_R6 -to sdram_cond_dqm[0]
+set_location_assignment PIN_T5 -to sdram_cond_dqm[1]
+set_global_assignment -name SYSTEMVERILOG_FILE verilog/vga_stream.sv
+set_global_assignment -name SYSTEMVERILOG_FILE verilog/vga_out.sv
+set_global_assignment -name VERILOG_FILE verilog/cpu.v
+set_global_assignment -name VERILOG_FILE verilog/ALU.v
 set_global_assignment -name BSF_FILE nes_nios/nes_nios.bsf
 set_global_assignment -name QSYS_FILE nes_nios.qsys
 set_global_assignment -name BDF_FILE nes_clean_top.bdf
 set_global_assignment -name CDF_FILE output_files/Chain3.cdf
-set_location_assignment PIN_R4 -to sdram_clk
-set_location_assignment PIN_R6 -to sdram_cond_dqm[0]
-set_location_assignment PIN_T5 -to sdram_cond_dqm[1]
 set_global_assignment -name CDF_FILE output_files/Chain1.cdf
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top

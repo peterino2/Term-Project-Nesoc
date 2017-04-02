@@ -29,7 +29,7 @@ int main()
     	}
     	IOWR_ALTERA_AVALON_TIMER_SNAPL(TEST_TIMER_BASE,0);
     	tv_1 = IORD_ALTERA_AVALON_TIMER_SNAPL(TEST_TIMER_BASE);// read from snap_l timer register
-    	printf("time taken to copy 256 Bytes (in us): %d\n", (tv_1 - tv_0) );
+    	printf("time taken to copy 256 Bytes (in clock cycles ): %d\n", (tv_1 - tv_0) );
     	IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, count & 0x01);
         count++;
     }

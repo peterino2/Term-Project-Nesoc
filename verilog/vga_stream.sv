@@ -1,4 +1,57 @@
-module nes_video_dc_fifo (// This thing does NOT check for errors as a heads up.
+
+module vga_stream(
+	input logic cpu_clk,		   	// .clk 
+	input logic reset,		   	// .reset 
+	input logic cpu_write,			/// cpu_ckin
+	input logic [5:0]c_code_cpu,  // .data_stream_in
+	input logic vga_clk,				//.vga_clk
+	// === Conduit ====
+	output logic [8:0]rgb_coe, 	// .conduit
+	output logic vsync,				//
+	output logic hsync,				// 
+	output logic vga_read,			// On reading = high, req next pixel 
+	output logic done
+); // VGA avalon interface,
+
+
+logic [5:0]scanline[255:0];
+logic [8:0]coloursDecode[63:0];
+logic [8:0]rgb_buf;
+logic [5:0]c_code_vga;
+
+logic [7:0]pix_ptr_x;
+logic [7:0]pix_ptr_y;
+
+always_ff@(posedge(vga_clk)) begin
+	if(vga_read)
+		scanline[pix_ptr_x] = c_code_vga;
+	rgb_buf = coloursDecode[scanline[pix_ptr_x]];
+end
+
+initial begin
+	$readmemh("vga_colours_rgb.txt",coloursDecode);
+end 
+
+vga_out vga_0(
+	.pix_clk(clk), .pix_ptr_x, .pix_ptr_y,.rgb(rgb_coe), .vsync, .hsync, .reading(vga_read), .rgb_buf
+);
+
+nes_video_dc_fifo dc_fifo(
+	.din(c_code_cpu), 
+	.clk_write(cpu_clk),
+	.read(vga_read),
+	.write(cpu_write),
+	.clk_read(vga_clk),
+	.dout(c_code_vga),
+	.reset, 
+	.done
+);
+
+endmodule 
+
+
+
+module nes_video_dc_fifo (// This thing does NOT check for errors
 	input logic [31:0] din,
 	input logic clk_write,
 	input logic read,
@@ -41,45 +94,3 @@ end
 endmodule
 
 
-module vga_stream(
-	input logic cpu_clk,		   // .clk 
-	input logic reset,		   // .reset 	input logic cpu_write,		/// cpu_ckin	// === Conduit ====	input logic vga_clk,		//.vga_clk	output logic [8:0]rgb_coe, // .conduit
-	input logic [5:0]c_code_cpu,    // .data_stream_in
-	output vsync,				//
-	output hsync,				// 
-	output vga_read				// On reading = high, req next pixel 
-); // VGA avalon interface,
-
-
-logic [5:0]scanline[255:0];
-logic [8:0]coloursDecode[63:0];
-logic [8:0]rgb_buf;
-
-logic [7:0]pix_ptr_x;
-logic [7:0]pix_ptr_y;
-
-always_ff@(posedge(vga_clk)) begin
-	if(vga_read)
-		scanline[pix_ptr_x] = c_code_vga;
-	rgb_buf = coloursDecode[scanline[pix_ptr_x]];
-end
-
-initial begin
-	$readmemh("vga_colours_rgb.txt",coloursDecode);
-end 
-
-vga_out vga_0(
-	.pix_clk(clk), .pix_ptr_x, .pix_ptr_y,.rgb(rgb_coe), .vsync, .hsync, .reading(vga_read), .rgb_buf
-);
-
-
-nes_video_dc_fifo dc_fifo(
-	.din(), .clk_write(cpu_clk), 
-	, .read(vga_read),
-	, .write(cpu_write),
-	, .clk_read(vga_clk),
-	, .dout(),
-	, .reset
-);
-
-endmodule 

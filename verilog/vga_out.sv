@@ -7,6 +7,7 @@ module vga_out(
 	input logic pix_clk,	// 12.5 MHz clock signal
 
 	input logic [8:0] rgb_buf,	// connect to rgb output of buffer
+	input logic reset, 
 
 	output logic [7:0]pix_ptr_x,
 	output logic [7:0]pix_ptr_y,
@@ -60,7 +61,8 @@ module vga_out(
 		if(pixel_x >= R_BLANK) rgb = 0;
 	end 
 	always_ff @(posedge pix_clk) begin
-
+		
+		
 		// HSYNC Control
 		if (pixel_x >= HSYNC_START && pixel_x < HB_PORCH)
 			hsync <= 0;
@@ -76,16 +78,20 @@ module vga_out(
 		// move to next pixel
 		if (pixel_x == 10'd399) begin
 			// reset x value
-			pixel_x <= '0;
+			pixel_x = '0;
 		
 			// increment or reset y value
 			if (pixel_y == 10'd524)
-				pixel_y <= '0;
+				pixel_y = '0;
 			else
-				pixel_y <= pixel_y + 1'b1;
+				pixel_y = pixel_y + 1'b1;
 		end
 		else
-			pixel_x <= pixel_x + 1'b1;
+			pixel_x = pixel_x + 1'b1;
+		if(reset)begin
+			pixel_x = 0;
+			pixel_y = 0;
+		end
 	end 
 
 	always_comb begin

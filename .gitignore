@@ -68,7 +68,7 @@ software/nes_nios_bsp/*
 software/nes_nios/*
 !software/nes_nios/*.c
 !software/nes_nios/*.h
-
+!*.bsf
 nes_nios/synthesis/*
 
 *.cdf

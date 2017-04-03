@@ -1,10 +1,10 @@
 
 module vga_stream(
-	input logic cpu_clk,		   	// .clk 
+	input logic cpu_latch,		   	//  
 	input logic reset,		   	// .reset 
-	input logic cpu_write,			/// cpu_ckin
+	input logic cpu_write,			// .cpu_ckin
 	input logic [5:0]c_code_cpu,  // .data_stream_in
-	input logic vga_clk,				//.vga_clk
+	input logic vga_clk,				// .vga_clk
 	// === Conduit ====
 	output logic [8:0]rgb_coe, 	// .conduit
 	output logic vsync,				//
@@ -32,12 +32,13 @@ initial begin
 end 
 
 vga_out vga_0(
-	.pix_clk(vga_clk), .pix_ptr_x, .pix_ptr_y,.rgb(rgb_coe), .vsync, .hsync, .reading(vga_read), .rgb_buf
+	.pix_clk(vga_clk), .pix_ptr_x, .pix_ptr_y,.rgb(rgb_coe), 
+	.vsync, .hsync, .reading(vga_read), .rgb_buf
 );
 
 nes_video_dc_fifo dc_fifo(
 	.din(c_code_cpu), 
-	.clk_write(cpu_clk),
+	.clk_write(cpu_latch),
 	.read(vga_read),
 	.write(cpu_write),
 	.clk_read(vga_clk),
@@ -82,7 +83,7 @@ always_ff@(posedge clk_read) begin
 	if(reset) begin 
 		ptr_read = 0;
 	end else begin 
-		if(read)begin
+		if(read&&(!done))begin
 			dout = vid_fifo[ptr_read];
 			if(!done)
 				ptr_read = ptr_read + 1;

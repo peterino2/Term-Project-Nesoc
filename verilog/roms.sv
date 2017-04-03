@@ -47,6 +47,8 @@ initial begin
 end 
 
 logic [7:0]rom['h600f:0]; // size of INES file, NROM style files with 16k Rom and 8k CHR Rom is supported only, total romdump size is 24k
+
+
 // -------------CPU Access and decode-------------
 always_comb begin 
 	// 16kBits =  xxaa aaaa aaaa aaaa 
@@ -57,7 +59,13 @@ end
 
 always_ff@(posedge cpu_clk) begin
 	cpu_do = rom[cpu_ptr];
-end 
+end
+endmodule
+
+
+module (
+	logic input [13:0]ab; 
+);
 
 // -------------PPU Access and decode-------------
 always_comb begin 
@@ -66,14 +74,6 @@ always_comb begin
 		ppu_ptr = {ppu_ab[11:0]} + 'h0010 + 'h4000;
 	else ppu_ptr = 0;
 	ppu_ptr = prog ? ppu_ab : ppu_ptr;// arbitrate, if prog mode is on then just write data on ppu_ab
-end
-
-always_ff@(posedge ppu_clk) begin
-	if(prog) begin 
-		rom[ppu_ptr] = prog_di;
-	end else begin 
-		ppu_do = rom[ppu_ptr];
-	end
 end
 
 endmodule

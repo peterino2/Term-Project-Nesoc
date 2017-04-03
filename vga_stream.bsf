@@ -27,8 +27,8 @@ agreement for further details.
 	(port
 		(pt 0 32)
 		(input)
-		(text "cpu_clk" (rect 0 0 30 12)(font "Arial" ))
-		(text "cpu_clk" (rect 21 27 51 39)(font "Arial" ))
+		(text "cpu_latch" (rect 0 0 37 12)(font "Arial" ))
+		(text "cpu_latch" (rect 21 27 58 39)(font "Arial" ))
 		(line (pt 0 32)(pt 16 32)(line_width 1))
 	)
 	(port

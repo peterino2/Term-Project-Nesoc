@@ -50,12 +50,9 @@ module vga_out(
 		pixel_y = '0;
 		rgb = '0;
 	end 
-	
-	
-	assign reading = (pixel_x>= NES_W && pixel_x < R_BLANK)&& 
-		!(pixel_y[0])&&
-		(pixel_y < VF_PORCH);
-	
+
+	assign reading = (rgb > 0) && (pixel_y[0] == 1);
+
 	always_comb begin 
 		rgb = (pixel_x >= NES_W && pixel_x < R_BLANK && pixel_y < VF_PORCH) ? rgb_buf : 0;
 		if(pixel_x >= R_BLANK) rgb = 0;

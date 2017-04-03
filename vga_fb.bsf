@@ -1,0 +1,93 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2016  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Intel and sold by Intel or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+*/
+(header "symbol" (version "1.2"))
+(symbol
+	(rect 64 64 256 264)
+	(text "vga_fb" (rect 5 0 40 12)(font "Arial" ))
+	(text "inst" (rect 8 160 25 172)(font "Arial" ))
+	(port
+		(pt 64 200)
+		(input)
+		(text "ppu_ctl_clk" (rect 0 0 55 12)(font "Arial" ))
+		(text "ppu_ctl_clk" (rect 56 119 68 174)(font "Arial" )(vertical))
+		(line (pt 64 200)(pt 64 184))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "ppu_ptr_x[7..0]" (rect 0 0 74 12)(font "Arial" ))
+		(text "ppu_ptr_x[7..0]" (rect 21 43 95 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48)(line_width 3))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "ppu_ptr_y[7..0]" (rect 0 0 75 12)(font "Arial" ))
+		(text "ppu_ptr_y[7..0]" (rect 21 59 96 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "ppu_DI[5..0]" (rect 0 0 61 12)(font "Arial" ))
+		(text "ppu_DI[5..0]" (rect 21 75 82 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "CS" (rect 0 0 15 12)(font "Arial" ))
+		(text "CS" (rect 21 91 36 103)(font "Arial" ))
+		(line (pt 0 96)(pt 16 96))
+	)
+	(port
+		(pt 120 200)
+		(input)
+		(text "pix_clk" (rect 0 0 34 12)(font "Arial" ))
+		(text "pix_clk" (rect 112 140 124 174)(font "Arial" )(vertical))
+		(line (pt 120 200)(pt 120 184))
+	)
+	(port
+		(pt 192 80)
+		(input)
+		(text "pix_ptr_x[7..0]" (rect 0 0 70 12)(font "Arial" ))
+		(text "pix_ptr_x[7..0]" (rect 97 72 167 84)(font "Arial" ))
+		(line (pt 176 80)(pt 192 80)(line_width 3))
+	)
+	(port
+		(pt 192 64)
+		(input)
+		(text "pix_ptr_y[7..0]" (rect 0 0 71 12)(font "Arial" ))
+		(text "pix_ptr_y[7..0]" (rect 96 56 167 68)(font "Arial" ))
+		(line (pt 176 64)(pt 192 64)(line_width 3))
+	)
+	(port
+		(pt 192 32)
+		(output)
+		(text "rgb[8..0]" (rect -8 0 33 12)(font "Arial" ))
+		(text "rgb[8..0]" (rect 137 27 171 39)(font "Arial" ))
+		(line (pt 192 32)(pt 176 32)(line_width 3))
+	)
+	(drawing
+		(rectangle (rect 16 16 184 160))
+	)
+)

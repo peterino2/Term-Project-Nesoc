@@ -63,9 +63,16 @@ end
 endmodule
 
 
-module (
-	logic input [13:0]ab; 
+module CHR_ROM(
+	logic input [13:0]ab,
+	output logic [7:0]DO
 );
+
+logic [7:0] CHR_ROM ['h1FFF:0]; // CHR ROM location
+
+initial begin // We dont have time to test all programming we are only gonna use preloaded data for this test.
+	$readmemh("CHR_ROM.dat", CHR_ROM);
+end 
 
 // -------------PPU Access and decode-------------
 always_comb begin 
@@ -73,7 +80,7 @@ always_comb begin
 	if(ppu_ab < 'h8000)	// no check for lower bound due to roll-over :3
 		ppu_ptr = {ppu_ab[11:0]} + 'h0010 + 'h4000;
 	else ppu_ptr = 0;
-	ppu_ptr = prog ? ppu_ab : ppu_ptr;// arbitrate, if prog mode is on then just write data on ppu_ab
+	
 end
 
 endmodule

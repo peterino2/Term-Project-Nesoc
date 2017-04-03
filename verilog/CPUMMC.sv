@@ -33,15 +33,16 @@ module cpu_ppu_mmc( // Recieves address bus data from CPU and maps registers
 			   // Mirrors present due to imperfect decoding from 2008 to 4000
 	input logic [15:0] AB,
 	output logic [2:0] PPUA,
-	output logic PPUCS);
+	output logic PPUCS 
+	);
 	assign PPUCS = (AB < 'h4000 && AB > 'h2000);
 	assign PPUA = AB[2:0];
 endmodule
 
 module cpu_ppu_dma_mmc( // Chip enable for the DMA 
 	inout logic [15:0]AB,
-	output logic dma_AB);
-	assign dma_AB = (AB='h4014);
-);
+	output logic dma_AB
+	);
+	assign dma_AB = (AB=='h4014);
 endmodule
 

@@ -219,15 +219,6 @@ set_location_assignment PIN_C2 -to sdram_cond_we_n
 set_location_assignment PIN_R4 -to sdram_clk
 set_location_assignment PIN_R6 -to sdram_cond_dqm[0]
 set_location_assignment PIN_T5 -to sdram_cond_dqm[1]
-set_global_assignment -name SYSTEMVERILOG_FILE verilog/vga_stream.sv
-set_global_assignment -name SYSTEMVERILOG_FILE verilog/vga_out.sv
-set_global_assignment -name VERILOG_FILE verilog/cpu.v
-set_global_assignment -name VERILOG_FILE verilog/ALU.v
-set_global_assignment -name BSF_FILE nes_nios/nes_nios.bsf
-set_global_assignment -name QSYS_FILE nes_nios.qsys
-set_global_assignment -name BDF_FILE nes_clean_top.bdf
-set_global_assignment -name CDF_FILE output_files/Chain3.cdf
-set_global_assignment -name CDF_FILE output_files/Chain1.cdf
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
@@ -242,5 +233,17 @@ set_location_assignment PIN_D6 -to BLUE[1]
 set_location_assignment PIN_C6 -to BLUE[2]
 set_location_assignment PIN_E6 -to HSYNC
 set_location_assignment PIN_D8 -to VSYNC
-set_location_assignment PIN_D12 -to CPU_DEBUG_PIN_1
+set_location_assignment PIN_D12 -to CPU_CLOCK_50_DEBUG
+set_global_assignment -name SYSTEMVERILOG_FILE verilog/CPUMMC.sv
+set_global_assignment -name SYSTEMVERILOG_FILE verilog/ppu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE verilog/vga_fb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE verilog/vga_out.sv
+set_global_assignment -name VERILOG_FILE verilog/cpu.v
+set_global_assignment -name VERILOG_FILE verilog/ALU.v
+set_global_assignment -name BSF_FILE nes_nios/nes_nios.bsf
+set_global_assignment -name QSYS_FILE nes_nios.qsys
+set_global_assignment -name BDF_FILE nes_clean_top.bdf
+set_global_assignment -name CDF_FILE output_files/Chain3.cdf
+set_global_assignment -name CDF_FILE output_files/Chain1.cdf
+set_global_assignment -name CDF_FILE output_files/Chain2.cdf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -50,9 +50,6 @@ module vga_fb(
 );
 	logic [5:0]pixel_code[240:0][255:0];	// Frame buffer RAM
 	logic [5:0]pix;
-	logic [2:0]r; 
-	logic [2:0]g; 
-	logic [2:0]b;
 	logic [8:0]coloursDecode[63:0];
 	logic [8:0]dec;
 	

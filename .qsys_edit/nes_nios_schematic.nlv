@@ -1,7 +1,7 @@
 # # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
 # 
 preplace inst nes_nios.altpll_0 -pg 1 -lvl 3 -y 40
-preplace inst nes_nios.led -pg 1 -lvl 2 -y 270
+preplace inst nes_nios.led -pg 1 -lvl 2 -y 290
 preplace inst nes_nios.cpu.reset_bridge -pg 1
 preplace inst nes_nios.cpu.clock_bridge -pg 1
 preplace inst nes_nios.cpu -pg 1 -lvl 1 -y 70
@@ -13,22 +13,21 @@ preplace inst nes_nios.vga_stream_read -pg 1 -lvl 3 -y 260
 preplace inst nes_nios -pg 1 -lvl 1 -y 40 -regy -20
 preplace inst nes_nios.vid_stream_out -pg 1 -lvl 3 -y 380
 preplace inst nes_nios.vid_stream_in -pg 1 -lvl 3 -y 580
-preplace inst nes_nios.onchip_memory2 -pg 1 -lvl 2 -y 30
 preplace inst nes_nios.jtag_uart -pg 1 -lvl 2 -y 110
-preplace netloc EXPORT<net_container>nes_nios</net_container>(MASTER)nes_nios.vga,(MASTER)altpll_0.c4) 1 3 1 NJ
-preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)nes_nios.vga_stream_out,(SLAVE)vid_stream_out.external_connection) 1 0 3 NJ 440 NJ 440 NJ
-preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)vga_stream_read.external_connection,(SLAVE)nes_nios.vga_stream_read) 1 0 3 NJ 400 NJ 400 NJ
+preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)nes_nios.vga_stream_read,(SLAVE)vga_stream_read.external_connection) 1 0 3 NJ 250 NJ 220 NJ
+preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)nes_nios.sdram,(SLAVE)sdram.wire) 1 0 3 NJ 550 NJ 550 NJ
+preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)clock_50.clk_in,(SLAVE)nes_nios.clk_50) 1 0 2 NJ 470 NJ
 preplace netloc EXPORT<net_container>nes_nios</net_container>(MASTER)altpll_0.c1,(MASTER)nes_nios.ppu) 1 3 1 NJ
 preplace netloc EXPORT<net_container>nes_nios</net_container>(MASTER)nes_nios.ppu_slow,(MASTER)altpll_0.c2) 1 3 1 NJ
+preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)vid_stream_out.external_connection,(SLAVE)nes_nios.vga_stream_out) 1 0 3 NJ 410 NJ 410 NJ
+preplace netloc FAN_OUT<net_container>nes_nios</net_container>(SLAVE)altpll_0.inclk_interface,(SLAVE)vga_stream_read.clk,(SLAVE)led.clk,(SLAVE)timer.clk,(MASTER)clock_50.clk,(SLAVE)jtag_uart.clk,(SLAVE)vid_stream_out.clk,(SLAVE)vid_stream_in.clk,(SLAVE)cpu.clk,(SLAVE)sdram.clk) 1 0 3 140 30 580 260 890
+preplace netloc EXPORT<net_container>nes_nios</net_container>(MASTER)altpll_0.c4,(MASTER)nes_nios.vga) 1 3 1 NJ
 preplace netloc EXPORT<net_container>nes_nios</net_container>(MASTER)nes_nios.shift,(MASTER)altpll_0.c0) 1 3 1 NJ
-preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)nes_nios.led,(SLAVE)led.external_connection) 1 0 2 NJ 300 NJ
-preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)sdram.wire,(SLAVE)nes_nios.sdram) 1 0 3 NJ 530 NJ 530 NJ
-preplace netloc INTERCONNECT<net_container>nes_nios</net_container>(SLAVE)vga_stream_read.s1,(SLAVE)led.s1,(SLAVE)vid_stream_out.s1,(SLAVE)cpu.debug_mem_slave,(SLAVE)onchip_memory2.s1,(SLAVE)altpll_0.pll_slave,(MASTER)cpu.instruction_master,(SLAVE)timer.s1,(MASTER)cpu.data_master,(SLAVE)sdram.s1,(SLAVE)vid_stream_in.s1,(SLAVE)jtag_uart.avalon_jtag_slave) 1 0 3 140 210 540 260 890
+preplace netloc INTERCONNECT<net_container>nes_nios</net_container>(MASTER)cpu.data_master,(SLAVE)vga_stream_read.s1,(SLAVE)sdram.s1,(SLAVE)altpll_0.pll_slave,(SLAVE)cpu.debug_mem_slave,(SLAVE)vid_stream_out.s1,(SLAVE)led.s1,(MASTER)cpu.instruction_master,(SLAVE)vid_stream_in.s1,(SLAVE)timer.s1,(SLAVE)jtag_uart.avalon_jtag_slave) 1 0 3 140 210 540 280 870
 preplace netloc EXPORT<net_container>nes_nios</net_container>(MASTER)nes_nios.nes_cpu,(MASTER)altpll_0.c3) 1 3 1 NJ
-preplace netloc FAN_OUT<net_container>nes_nios</net_container>(MASTER)cpu.irq,(SLAVE)timer.irq,(SLAVE)jtag_uart.irq,(SLAVE)vga_stream_read.irq) 1 1 2 580 240 830
-preplace netloc INTERCONNECT<net_container>nes_nios</net_container>(SLAVE)timer.reset,(SLAVE)cpu.reset,(SLAVE)onchip_memory2.reset1,(SLAVE)sdram.reset,(SLAVE)jtag_uart.reset,(MASTER)clock_50.clk_reset,(SLAVE)led.reset,(SLAVE)vga_stream_read.reset,(SLAVE)altpll_0.inclk_interface_reset,(SLAVE)clock_50.clk_in_reset,(SLAVE)vid_stream_in.reset,(MASTER)cpu.debug_reset_request,(SLAVE)vid_stream_out.reset) 1 0 3 160 230 520 380 870
-preplace netloc FAN_OUT<net_container>nes_nios</net_container>(MASTER)clock_50.clk,(SLAVE)led.clk,(SLAVE)cpu.clk,(SLAVE)sdram.clk,(SLAVE)altpll_0.inclk_interface,(SLAVE)vid_stream_out.clk,(SLAVE)onchip_memory2.clk1,(SLAVE)vid_stream_in.clk,(SLAVE)timer.clk,(SLAVE)jtag_uart.clk,(SLAVE)vga_stream_read.clk) 1 0 3 140 30 560 220 850
+preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)led.external_connection,(SLAVE)nes_nios.led) 1 0 2 NJ 320 NJ
+preplace netloc FAN_OUT<net_container>nes_nios</net_container>(MASTER)cpu.irq,(SLAVE)timer.irq,(SLAVE)jtag_uart.irq,(SLAVE)vga_stream_read.irq) 1 1 2 600 240 830
+preplace netloc INTERCONNECT<net_container>nes_nios</net_container>(SLAVE)cpu.reset,(SLAVE)vid_stream_in.reset,(SLAVE)vga_stream_read.reset,(SLAVE)sdram.reset,(SLAVE)altpll_0.inclk_interface_reset,(MASTER)cpu.debug_reset_request,(SLAVE)led.reset,(SLAVE)jtag_uart.reset,(SLAVE)clock_50.clk_in_reset,(MASTER)clock_50.clk_reset,(SLAVE)vid_stream_out.reset,(SLAVE)timer.reset) 1 0 3 160 230 520 530 850
 preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)vid_stream_in.external_connection,(SLAVE)nes_nios.ppu_stream_in) 1 0 3 NJ 610 NJ 610 NJ
-preplace netloc EXPORT<net_container>nes_nios</net_container>(SLAVE)nes_nios.clk_50,(SLAVE)clock_50.clk_in) 1 0 2 NJ 470 NJ
 levelinfo -pg 1 0 110 1210
 levelinfo -hier nes_nios 120 280 640 940 1130

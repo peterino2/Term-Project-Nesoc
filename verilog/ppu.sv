@@ -219,9 +219,9 @@ initial begin
 	BKG_PALLETES[15] = 'h0A; // dark green
 	
 	SPR_PALLETES[0] = 'h0F; // black
-	SPR_PALLETES[1] = 'h00; // grey
-	SPR_PALLETES[2] = 'h01; // blue
-	SPR_PALLETES[3] = 'h05; // red
+	SPR_PALLETES[1] = 'h02; // grey
+	SPR_PALLETES[2] = 'h36; // blue
+	SPR_PALLETES[3] = 'h16; // red
 	
 	SPR_PALLETES[4] = 'h0F; // black
 	SPR_PALLETES[5] = 'h28; // yellow
@@ -405,7 +405,7 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			if(spr_scan_rend_iter == 0)
 			// Scan for sprites that we can draw
 			spr_rend_draw_flags = 0;
-			spr_scan_ypos = OAM[spr_scan_iter << 2];
+			spr_scan_ypos = OAM[spr_scan_iter << 2] + 1;
 			
 			if( (pixel_y < 8||(spr_scan_ypos > (pixel_y - 8))) && (spr_scan_ypos <= (pixel_y )) && spr_scan_ypos < 'hEF) begin
 				spr_scan_state <= SPR_REND_FETCH_ATTR;

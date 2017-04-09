@@ -388,7 +388,7 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			spr_rend_draw_flags = 0;
 			spr_scan_ypos = OAM[spr_scan_iter << 2];
 			
-			if( (pixel_y < 8||(spr_scan_ypos >= (pixel_y - 7))) && (spr_scan_ypos <= (pixel_y + 1)) && spr_scan_ypos < 'hEF) begin
+			if( (pixel_y < 8||(spr_scan_ypos > (pixel_y - 7))) && (spr_scan_ypos <= (pixel_y + 1)) && spr_scan_ypos < 'hEF) begin
 				spr_scan_state <= SPR_REND_FETCH_ATTR;
 			end else begin
 				spr_scan_iter = (spr_scan_iter + 1);

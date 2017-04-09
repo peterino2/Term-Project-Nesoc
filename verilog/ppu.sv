@@ -197,24 +197,24 @@ initial begin
 	$readmemh("CHR_ROM1.dat", CHR_ROM_1);
 	// Auto generated test colours palletes
 	BKG_PALLETES[0] = 'h0F; // black
-	BKG_PALLETES[1] = 'h00; // dark grey
-	BKG_PALLETES[2] = 'h10; // light grey
-	BKG_PALLETES[3] = 'h30; // white
+	BKG_PALLETES[1] = 'h30; // white
+	BKG_PALLETES[2] = 'h36; // pink
+	BKG_PALLETES[3] = 'h06; // brown
 	
 	BKG_PALLETES[4] = 'h0F; // black
-	BKG_PALLETES[5] = 'h01; // dark blue
-	BKG_PALLETES[6] = 'h21; // blue
-	BKG_PALLETES[7] = 'h31; // light blue
+	BKG_PALLETES[5] = 'h30; // white
+	BKG_PALLETES[6] = 'h2c; // turquoise?
+	BKG_PALLETES[7] = 'h24; // pinkier pink
 	
 	BKG_PALLETES[8] = 'h0F; // black
-	BKG_PALLETES[9] = 'h30; // white
-	BKG_PALLETES[10] = 'h36; // pink
-	BKG_PALLETES[11] = 'h06; // brown
+	BKG_PALLETES[9] = 'h16; // light brown
+	BKG_PALLETES[10] = 'h30; // white
+	BKG_PALLETES[11] = 'h37; // white people
 	
 	BKG_PALLETES[12] = 'h0F; // black
-	BKG_PALLETES[13] = 'h2A; // light green
-	BKG_PALLETES[14] = 'h1A; // green
-	BKG_PALLETES[15] = 'h0A; // dark green
+	BKG_PALLETES[13] = 'h06; // brown
+	BKG_PALLETES[14] = 'h27; // orange
+	BKG_PALLETES[15] = 'h02; // blue
 	
 	SPR_PALLETES[0] = 'h0F; // black
 	SPR_PALLETES[1] = 'h00; // grey

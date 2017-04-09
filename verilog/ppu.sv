@@ -280,6 +280,7 @@ logic [15:0] bg_slice_next;	// two-bite background slice
 logic [3:0] pallete_ptr='0;// choose colour
 logic [11:0] chr_ptr_0;	// chr rom pointer
 logic [11:0] chr_ptr_1;	// chr rom pointer
+logic [2:0] bkg_offset;
 
 
 
@@ -335,7 +336,7 @@ always_comb begin
 	
 // ------------ Output Colour -------------------
 	bkg_cdat = BKG_PALLETES[pallete_ptr];
-	pallete_ptr[1:0] = {bg_slice[7-tile_col],bg_slice[15-tile_col]};
+	pallete_ptr[1:0] = {bg_slice[7-bkg_offset],bg_slice[15-bkg_offset]};
 	
 // ------------ Attribute decode ----------------
 	if (tile_x % 4 < 2) begin 					// left side
@@ -372,13 +373,14 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 	case(bkg_draw_state)
 		FETCHING:begin
 			bg_slice = bg_slice_next;
-
+			bkg_offset = '0;
 		end 
 						
 		PIPING: begin 
-		
+			bkg_offset = bkg_offset + 1'b1;
 		end 
 		HALT: begin 
+			bkg_offset = '0;
 		end 
 	endcase 
 // Sprite spr_scan  Evaluates sprites and loads them into the sprite renderer

@@ -171,7 +171,8 @@ logic [2:0] spr_scan_rend_iter = 0;
 logic spr_vflip;
 
 // ========== CHR ROM =========
-logic [7:0] CHR_ROM ['h1FFF:0]; // CHR ROM location
+logic [7:0] CHR_ROM_0 ['hFFF:0]; // CHR ROM location
+logic [7:0] CHR_ROM_1['hfff:0];	// background CHR
 
 // ========= BKG RENDERING ROM =================
 // Consists of name and attribute tables 
@@ -192,27 +193,28 @@ logic [5:0]SPR_PALLETES[15:0];
 
 // We dont have time to test all programming we are only gonna use preloaded data for this test.
 initial begin 
-	$readmemh("CHR_ROM.dat", CHR_ROM);
+	$readmemh("CHR_ROM0.dat", CHR_ROM_0);
+	$readmemh("CHR_ROM1.dat", CHR_ROM_1);
 	// Auto generated test colours palletes
 	BKG_PALLETES[0] = 'h0F; // black
-	BKG_PALLETES[1] = 'h00; // grey
-	BKG_PALLETES[2] = 'h10; // blue
-	BKG_PALLETES[3] = 'h30; // red
+	BKG_PALLETES[1] = 'h00; // dark grey
+	BKG_PALLETES[2] = 'h10; // light grey
+	BKG_PALLETES[3] = 'h30; // white
 	
 	BKG_PALLETES[4] = 'h0F; // black
-	BKG_PALLETES[5] = 'h01; // yellow
-	BKG_PALLETES[6] = 'h21; // green
-	BKG_PALLETES[7] = 'h31; // red
+	BKG_PALLETES[5] = 'h01; // dark blue
+	BKG_PALLETES[6] = 'h21; // blue
+	BKG_PALLETES[7] = 'h31; // light blue
 	
 	BKG_PALLETES[8] = 'h0F; // black
-	BKG_PALLETES[9] = 'h20; // teal
-	BKG_PALLETES[10] = 'h36; // blue
-	BKG_PALLETES[11] = 'h06; // red
+	BKG_PALLETES[9] = 'h30; // white
+	BKG_PALLETES[10] = 'h36; // pink
+	BKG_PALLETES[11] = 'h06; // brown
 	
 	BKG_PALLETES[12] = 'h0F; // black
-	BKG_PALLETES[13] = 'h2A; // orange
-	BKG_PALLETES[14] = 'h1A; // red
-	BKG_PALLETES[15] = 'h0A; // green
+	BKG_PALLETES[13] = 'h2A; // light green
+	BKG_PALLETES[14] = 'h1A; // green
+	BKG_PALLETES[15] = 'h0A; // dark green
 	
 	SPR_PALLETES[0] = 'h0F; // black
 	SPR_PALLETES[1] = 'h00; // grey
@@ -276,8 +278,8 @@ logic [5:0] attr_ptr;	// attribute table pointer
 logic [15:0] bg_slice;	// two-bite background slice
 logic [15:0] bg_slice_next;	// two-bite background slice
 logic [3:0] pallete_ptr='0;// choose colour
-logic [15:0] chr_ptr_0;	// chr rom pointer
-logic [15:0] chr_ptr_1;	// chr rom pointer
+logic [11:0] chr_ptr_0;	// chr rom pointer
+logic [11:0] chr_ptr_1;	// chr rom pointer
 
 
 
@@ -333,7 +335,7 @@ always_comb begin
 	
 // ------------ Output Colour -------------------
 	bkg_cdat = BKG_PALLETES[pallete_ptr];
-	pallete_ptr[1:0] = {bg_slice[15-tile_col],bg_slice[7-tile_col]};
+	pallete_ptr[1:0] = {bg_slice[7-tile_col],bg_slice[15-tile_col]};
 	
 // ------------ Attribute decode ----------------
 	if (tile_x % 4 < 2) begin 					// left side
@@ -411,12 +413,12 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			spr_tile_slice_ptr[11:4] = spr_tile_index;
 			spr_tile_slice_ptr[3] = 0;
 			spr_tile_slice_ptr[2:0] = (spr_vflip) ? 7 - spr_tile_slice : spr_tile_slice ;
-			spr_rend_buf[spr_scan_rend_iter][7:0] = CHR_ROM[spr_tile_slice_ptr];
+			spr_rend_buf[spr_scan_rend_iter][7:0] = CHR_ROM_0[spr_tile_slice_ptr];
 			spr_scan_state <= SPR_REND_FETCH_DRAW_MSB;
 		end 
 		SPR_REND_FETCH_DRAW_MSB: begin // grab x position and lsb and consolidate and send to sprite renderer
 			spr_rend_buf[spr_scan_rend_iter][23:16] = OAM[(spr_scan_iter << 2) + OAM_SPR_XPOS];
-			spr_rend_buf[spr_scan_rend_iter][15:8] = CHR_ROM[spr_tile_slice_ptr+8];
+			spr_rend_buf[spr_scan_rend_iter][15:8] = CHR_ROM_0[spr_tile_slice_ptr+8];
 			spr_rend_draw_flags[spr_scan_rend_iter] = 1;
 			spr_scan_rend_iter = (spr_scan_rend_iter + 1 < 8) ? spr_scan_rend_iter + 1 : 8;
 			spr_scan_iter = spr_scan_iter + 1;
@@ -451,14 +453,14 @@ always_ff@(posedge PPU_SLOW_CLOCK) begin
 	case(bkg_draw_state2)
 		BUFF_SLICE_1: begin
 		///////////////////////////////////// change when chr rom chopped in two
-			chr_ptr_0 = {4'b0001,NAME_TABLE_0[nt_ptr_next],1'b0,tile_row};
-			bg_slice_next[15:8] = CHR_ROM[chr_ptr_0];
+			chr_ptr_0 = {NAME_TABLE_0[nt_ptr_next],1'b0,tile_row};
+			bg_slice_next[15:8] = CHR_ROM_1[chr_ptr_0];
 			bkg_draw_state2 <= BUFF_SLICE_2;
 		end
 		
 		BUFF_SLICE_2: begin
-			chr_ptr_1 = {4'b0001,NAME_TABLE_0[nt_ptr_next],1'b1,tile_row};
-			bg_slice_next[7:0] = CHR_ROM[chr_ptr_1];
+			chr_ptr_1 = {NAME_TABLE_0[nt_ptr_next],1'b1,tile_row};
+			bg_slice_next[7:0] = CHR_ROM_1[chr_ptr_1];
 			bkg_draw_state2 <= IDLE;
 		end
 		

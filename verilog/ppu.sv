@@ -331,7 +331,7 @@ always_comb begin
 		tile_col = pixel_x % 8;
 		tile_row = pixel_y % 8;
 		nt_ptr = tile_x + tile_y * 6'd32;
-		attr_ptr = (tile_x >> 2) + (tile_y >> 2) * 8;
+		attr_ptr = (tile_x == 5'b0) ? (tile_y >> 2) * 8 : ((tile_x-1) >> 2) + (tile_y >> 2) * 8;
 	end
 	
 // ------------ Output Colour -------------------

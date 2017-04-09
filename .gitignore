@@ -76,3 +76,16 @@ nes_nios/synthesis/*
 
 !software/nes_nios/*.c
 !software/nes_nios/*.h
+dpram.qip
+dpram_bb.v
+dpram_vga.qip
+dpram_vga.v
+dpram_vga_bb.v
+output_files/greybox_tmp/cbx_args.txt
+ppu_tb.bsf
+verilog/vsim.wlf
+verilog/work/_lib.qdb
+verilog/work/_lib1_3.qdb
+verilog/work/_lib1_3.qpg
+verilog/work/_lib1_3.qtl
+verilog/work/_vmake

@@ -7,17 +7,17 @@
 // Test image: draw the mario sprite as a background and we are gonna use NT_1 for 
 // 
 
-module ppu_tb();
+module ppu_tb(); // Static general purpose testbench for viewing internal signals
 
-	logic [2:0] CPUA;	// PPU register select Selects ppu register 0-7 (mapped to $2000-$2007 by PPUMMC)
+	logic [2:0] CPUA;		// PPU register select Selects ppu register 0-7 (mapped to $2000-$2007 by PPUMMC)
 	logic [7:0] CPUDI; 	// CPU data input
 	logic[7:0] CPUDO;  	// CPU data read 
-	logic CPUCLK;		// Cpu clock for read/write 
-	logic RW; 			// Read/Write
-	logic CS; 			// Chip Select
-	logic RST;			// Chip reset
-	logic NMI;			// Non interruptable Interrupted (signifies the start of VBLANK)
-	logic ALE; 			// Address latch enable
+	logic CPUCLK;			// Cpu clock for read/write 
+	logic RW; 				// Read/Write
+	logic CS; 				// Chip Select
+	logic RST;				// Chip reset
+	logic NMI;				// Non interruptable Interrupted (signifies the start of VBLANK)
+	logic ALE; 				// Address latch enable
 	logic [13:0] APPU; 	// Address and data pins 
 	logic [7:0] PPUDO; 	// PPU data output
 	logic [7:0] PPUDI; 	// PPU data input 
@@ -41,15 +41,15 @@ ppu_core ppu(.*);
 
 endmodule 
 
-module ppu_core( 				// PPU Component
+module ppu_core( 					// PPU Component
 	input logic [2:0] CPUA,		// PPU register select Selects ppu register 0-7 (mapped to $2000-$2007 by PPUMMC)
 	input logic [7:0] CPUDI,  	// CPU data input
 	output logic[7:0] CPUDO,  	// CPU data read 
 	input logic CPUCLK,			// Cpu clock for read/write 
-	input logic RW, 			// Read/Write
-	input logic CS, 			// Chip Select
-	input logic RST,			// Chip reset
-	output logic NMI,			// Non interruptable Interrupted (signifies the start of VBLANK)
+	input logic RW, 				// Read/Write
+	input logic CS, 				// Chip Select
+	input logic RST,				// Chip reset
+	output logic NMI,				// Non interruptable Interrupted (signifies the start of VBLANK)
 	output logic ALE, 			// Address latch enable
 	output logic [13:0] APPU, 	// Address and data pins 
 	output logic [7:0] PPUDO, 	// PPU data output
@@ -60,10 +60,10 @@ module ppu_core( 				// PPU Component
 	input logic PPU_SLOW_CLOCK // phase locked ppu slow processing clock
 );
 // ========= frame timing parameters =========
-parameter X_PIXELS = 340; 	// The maximum number of pixels per scanline
-parameter Y_PIXELS = 262;	// the maximum number of scanlinesh
-parameter X_BPORCH = 256; // start of the x pixel backgporch
-parameter Y_BPORCH = 240; // start of the y pixel backgporch
+parameter X_PIXELS = 340; 		// The maximum number of pixels per scanline
+parameter Y_PIXELS = 262;		// the maximum number of scanlinesh
+parameter X_BPORCH = 256; 		// start of the x pixel backgporch
+parameter Y_BPORCH = 240; 		// start of the y pixel backgporch
 parameter PATTERN_TABLE_0 = 'h0000; // Sprites
 parameter PATTERN_TABLE_1 = 'h1000; // Backgrounds
 
@@ -83,13 +83,13 @@ parameter OAM_SPR_XPOS = 3;
 // ============ NES REGISTERS ==============
 
 logic [7:0] PPUCTL = 'b0101_0000;		// 2000 - PPUCTL
-logic [7:0] PPUMASK;		// 2001
-logic [7:0] PPUSTATUS;	// 2002 
-logic [7:0] OAMADDR;		// 2003
-logic [7:0] OAMDATA;		// 2004
-logic [7:0] PPUSCROLL;	// 2005
-logic [7:0] PPUADDR;		// 2006
-logic [7:0] PPUDATA;		// 2007
+logic [7:0] PPUMASK;							// 2001
+logic [7:0] PPUSTATUS;						// 2002 
+logic [7:0] OAMADDR;							// 2003
+logic [7:0] OAMDATA;							// 2004
+logic [7:0] PPUSCROLL;						// 2005
+logic [7:0] PPUADDR;							// 2006
+logic [7:0] PPUDATA;							// 2007
 
 
 // ======== NES register wire assignments =====
@@ -98,13 +98,13 @@ logic bkg_base_rom;
 assign spr_base_rom = PPUCTL[3];
 assign bkg_base_rom = PPUCTL[4];
 
-logic [9:0]pixel_x=0;  // x pixel for fsm
-logic [9:0]pixel_x_next =0;  // x pixel for fsm
-logic [7:0]pixel_y=0;  // y pixel for fsm
-logic [7:0]pixel_y_next=0;  // y pixel for fsm
+logic [9:0]pixel_x=0;  			// x pixel for fsm
+logic [9:0]pixel_x_next =0;  	// x pixel for fsm
+logic [7:0]pixel_y=0;  			// y pixel for fsm
+logic [7:0]pixel_y_next=0;  	// y pixel for fsm
 
-logic [5:0]bkg_cdat=0; // output pixel data
-integer i; // general integer for loops
+logic [5:0]bkg_cdat=0; 			// output pixel data
+integer i,j,k,l; 					// general integers for loops
 
 // ===========NT_0 ==========
 logic [7:0] NAMETABLE_0[959:0];
@@ -131,11 +131,11 @@ logic [5:0] spr_cdat;
 	 16 - 23 X position of sprite bitmap (spr_bmp_xpos)
 	 24 - 32 Attribute byte contains extra rendering info
 */
-logic [7:0]spr_rend_draw_flags = 0; // Draw flags for the next scanline
-logic [3:0]spr_rend_pallete_colour [7:0];
+logic [7:0]spr_rend_draw_flags = 0; 		// Draw flags for the next scanline
+logic [3:0]spr_rend_pallete_colour [7:0];	
 logic [7:0]spr_rend_valid;
  
-logic spr_scan_rend_now=1;
+logic spr_scan_rend_now = 1;
 logic [31:0]spr_rend_buf[7:0]; // Sprite draw data for this scanline
 logic [31:0]spr_draw_buf[7:0]; 
 logic [7:0]spr_scan_ypos; 	// Y position of the current sprite
@@ -164,6 +164,8 @@ parameter SPR_SCAN_HALT = 1;
 parameter SPR_REND_FETCH_TILE_LSB=2;
 parameter SPR_REND_FETCH_ATTR =3;
 parameter SPR_REND_FETCH_DRAW_MSB=4;
+logic [7:0] spr_draw_priority = 0;
+logic spr_cdat_fg;
 logic [2:0] spr_scan_state = SPR_SCAN_SCAN;
 logic [2:0] spr_scan_state_next;
 logic [7:0] spr_scan_iter = 0;
@@ -287,10 +289,13 @@ logic [11:0] chr_ptr_1;	// chr rom pointer
 //============ COMBINATIONAL BLOCK===============
 //===============================================
 
+logic [5:0]draw_cdat;
+logic spr_cdat_pri;
+logic bkg_cdat_fg; 
 
 assign PPU_PTR_X = (pixel_x < 256) ? pixel_x : 255;
 assign PPU_PTR_Y = (pixel_y < 240) ? pixel_y : 239;
-assign VGA_STREAM_DATA = spr_cdat;
+assign VGA_STREAM_DATA = draw_cdat;
 
 
 always_comb begin 
@@ -312,11 +317,18 @@ always_comb begin
 // ------------ spr_draw_mux --------- 
 // Multi plexer for drawing the combined output of the sprites
 	spr_cdat = 'h0f;
+	draw_cdat = bkg_cdat;
+	spr_cdat_fg = 0;
+	spr_cdat_pri = 0;
 	for ( i = 0; i < 8; i ++) begin
 		if(spr_rend_valid[i]) begin
 			spr_cdat = SPR_PALLETES[spr_rend_pallete_colour[i]];
+			if(spr_rend_pallete_colour[i][1] | spr_rend_pallete_colour[i][0] != 0)
+			spr_cdat_fg = 1;
+			if(spr_draw_priority[i])
+			spr_cdat_pri = 1;
 		end
-	end 	 
+	end
 	tile_x = 0;
 	tile_y = 0;
 	tile_col = 0;
@@ -357,6 +369,9 @@ always_comb begin
 	
 // -------- Next tile pointer -------------------
 	nt_ptr_next = (nt_ptr == 10'd959) ? 0 : nt_ptr + 1;
+// -------- Sprite and background Colour Data Mux ------
+
+	if(spr_cdat_fg&& (spr_cdat_pri || (pallete_ptr[1:0] == 0))) draw_cdat = spr_cdat;
 
 end 
 
@@ -390,7 +405,7 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			spr_rend_draw_flags = 0;
 			spr_scan_ypos = OAM[spr_scan_iter << 2];
 			
-			if( (pixel_y < 8||(spr_scan_ypos > (pixel_y - 7))) && (spr_scan_ypos <= (pixel_y + 1)) && spr_scan_ypos < 'hEF) begin
+			if( (pixel_y < 8||(spr_scan_ypos > (pixel_y - 8))) && (spr_scan_ypos <= (pixel_y )) && spr_scan_ypos < 'hEF) begin
 				spr_scan_state <= SPR_REND_FETCH_ATTR;
 			end else begin
 				spr_scan_iter = (spr_scan_iter + 1);
@@ -404,11 +419,12 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			spr_rend_buf[spr_scan_rend_iter][31:24] = OAM[(spr_scan_iter << 2) + OAM_SPR_ATTR];
 			spr_tile_slice_ptr[12] = spr_base_rom;
 			spr_vflip = spr_rend_buf[spr_scan_rend_iter][30];
+			spr_draw_priority[spr_scan_rend_iter] = spr_rend_buf[spr_scan_rend_iter][29];
 			spr_scan_state <= SPR_REND_FETCH_TILE_LSB;
 		end 
 		SPR_REND_FETCH_TILE_LSB: begin // grab tile index and tile lsb
 			spr_tile_index = OAM[(spr_scan_iter << 2) + OAM_SPR_INDX];
-			spr_tile_slice = pixel_y + 1 - spr_scan_ypos;
+			spr_tile_slice = pixel_y - spr_scan_ypos;
 			spr_tile_slice_ptr[15:13] = 0;
 			spr_tile_slice_ptr[11:4] = spr_tile_index;
 			spr_tile_slice_ptr[3] = 0;
@@ -447,12 +463,11 @@ spr_rend spr_rend_4( PPU_SLOW_CLOCK, spr_rend_buf[4], pixel_x, spr_rend_draw_fla
 spr_rend spr_rend_5( PPU_SLOW_CLOCK, spr_rend_buf[5], pixel_x, spr_rend_draw_flags[5]&spr_scan_rend_now, spr_rend_draw_flags[5], spr_rend_pallete_colour[5], spr_rend_valid[5] );
 spr_rend spr_rend_6( PPU_SLOW_CLOCK, spr_rend_buf[6], pixel_x, spr_rend_draw_flags[6]&spr_scan_rend_now, spr_rend_draw_flags[6], spr_rend_pallete_colour[6], spr_rend_valid[6] );
 spr_rend spr_rend_7( PPU_SLOW_CLOCK, spr_rend_buf[7], pixel_x, spr_rend_draw_flags[7]&spr_scan_rend_now, spr_rend_draw_flags[7], spr_rend_pallete_colour[7], spr_rend_valid[7] );
-/*
+
 always_ff@(posedge PPU_SLOW_CLOCK) begin
 
 	case(bkg_draw_state2)
 		BUFF_SLICE_1: begin
-		///////////////////////////////////// change when chr rom chopped in two
 			chr_ptr_0 = {NAME_TABLE_0[nt_ptr_next],1'b0,tile_row};
 			bg_slice_next[15:8] = CHR_ROM_1[chr_ptr_0];
 			bkg_draw_state2 <= BUFF_SLICE_2;
@@ -470,5 +485,5 @@ always_ff@(posedge PPU_SLOW_CLOCK) begin
 			
 		end
 	endcase
-end*/
+end
 endmodule

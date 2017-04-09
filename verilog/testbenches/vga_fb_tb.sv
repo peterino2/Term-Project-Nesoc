@@ -24,9 +24,9 @@ module vga_fb_tb();
 		pix_ptr_y = 23;
 		ppu_DI = 03; // Should write 010 000 100 to rgb
 		#80ns;
-		for (i =0; i< 6; i++)begin
-			for (j = 0; j<12; j++) begin		
-			pix_ptr_x = j; ppu_ptr_x = j;
+		for (i =0; i< 240; i++)begin
+			for (j = 0; j<256; j++) begin		
+			pix_ptr_x = j-1; ppu_ptr_x = j;
 			pix_ptr_y = i; ppu_ptr_y = i;
 			ppu_DI = i+j*6;
 			#40ns;

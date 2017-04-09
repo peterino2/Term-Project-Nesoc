@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="nes_nios" kind="nes_nios" version="1.0" fabric="QSYS">
  <!-- Format version 16.1 196 (Future versions may contain additional information.) -->
- <!-- 2017.04.04.13:04:51 -->
+ <!-- 2017.04.08.18:28:43 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1491336291</value>
+  <value>1491701323</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>

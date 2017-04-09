@@ -48,8 +48,11 @@ module vga_fb(
 	input logic [7:0]pix_ptr_y,
 	output logic [8:0]rgb // format of RRRGGGBBB r is always gonna be msb
 );
-	logic [5:0]pixel_code[240:0][255:0];	// Frame buffer RAM
+	logic [5:0]pixel_code[239:0][255:0];	// Frame buffer RAM
 	logic [5:0]pix;
+	logic [2:0]r; 
+	logic [2:0]g; 
+	logic [2:0]b;
 	logic [8:0]coloursDecode[63:0];
 	logic [8:0]dec;
 	
@@ -63,15 +66,13 @@ module vga_fb(
 	end 
 	
 	always_ff@(posedge pix_clk) begin
-	 pix = pixel_code[pix_ptr_x][pix_ptr_y_clamp];
+	 pix = pixel_code[ppu_ptr_y_clamp][ppu_ptr_x];
 	end
 	
 	
 	// PPU access (Write only)
-	always_ff@(posedge ppu_ctl_clk) begin 
-		if(CS) begin
-			pixel_code[ppu_ptr_x][ppu_ptr_y_clamp] = ppu_DI;
-		end
+	always_ff@(posedge pix_clk) begin 
+			pixel_code[ppu_ptr_y_clamp][ppu_ptr_x] = ppu_ptr_x > 127?'h27:'h15;
 	end 
 	assign dec = coloursDecode[pix];
 	// vga out access (Read only)

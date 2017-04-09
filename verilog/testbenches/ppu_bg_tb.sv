@@ -1,4 +1,4 @@
-module ppu_tb();
+module ppu_bkg_tb();
 
 logic [2:0] CPUA;		// PPU register select Selects ppu register 0-7 (mapped to $2000-$2007 by PPUMMC)
 logic [7:0] CPUDI;  	// CPU data input

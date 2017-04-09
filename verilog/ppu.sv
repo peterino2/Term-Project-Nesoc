@@ -57,7 +57,6 @@ module ppu_core( 				// PPU Component
 	output logic [5:0]VGA_STREAM_DATA, // PPU video pipeline out
 	output logic [7:0] PPU_PTR_X,
 	output logic [7:0] PPU_PTR_Y,
-	output logic VGA_STREAM_READY,	// ppu video ready output
 	input logic PPU_SLOW_CLOCK // phase locked ppu slow processing clock
 );
 // ========= frame timing parameters =========
@@ -181,7 +180,6 @@ logic [7:0]ATTR_TABLE_0[63:0];
 
 logic [7:0]NAME_TABLE_1[959:0];
 logic [7:0]ATTR_TABLE_1[63:0];
-logic [7:0] CHR_ROM ['h1FFF:0]; 
 
 // ============= PALLETES ================
 // 0-3 is pallete 0 
@@ -301,6 +299,7 @@ always_comb begin
 	end
 	else begin
 			pixel_x_next = pixel_x + 1;
+			pixel_y_next = pixel_y;
 	end
 // ----------- background draw state control ----
 	bkg_draw_state = (pixel_y < Y_BPORCH)
@@ -315,8 +314,13 @@ always_comb begin
 		if(spr_rend_valid[i]) begin
 			spr_cdat = SPR_PALLETES[spr_rend_pallete_colour[i]];
 		end
-	end 	
-end 
+	end 	 
+	tile_x = 0;
+	tile_y = 0;
+	tile_col = 0;
+	tile_row = 0;
+	nt_ptr = 0;
+	attr_ptr = 0;
 // ------------ Tile coordinates ----------------
 	if (pixel_x < X_BPORCH && pixel_y < Y_BPORCH) begin
 		tile_x = pixel_x >> 3;
@@ -360,18 +364,13 @@ end
 //===============================================
 
 always_ff@(posedge PPU_SLOW_CLOCK)begin 
-	if(RST)begin
-	pixel_x <= 0;
-	pixel_y <= 0;
-	end else begin
-		pixel_x <= pixel_x_next;
-		pixel_y <= pixel_y_next;
-	end 
+	pixel_x <= pixel_x_next;
+	pixel_y <= pixel_y_next;
 // NAMETABLE RENDER AND DRAW STATE 
 	case(bkg_draw_state)
 		FETCHING:begin
 			bg_slice = bg_slice_next;
-			bkg_draw_state2 <= BUFF_SLICE_1;
+
 		end 
 						
 		PIPING: begin 
@@ -391,21 +390,6 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			
 			if( (pixel_y < 8||(spr_scan_ypos >= (pixel_y - 7))) && (spr_scan_ypos <= (pixel_y + 1)) && spr_scan_ypos < 'hEF) begin
 				spr_scan_state <= SPR_REND_FETCH_ATTR;
-				//spr_tile_index = OAM[(spr_scan_iter << 2) + OAM_SPR_INDX];
-				//spr_tile_slice = (pixel_y + 1 - spr_scan_ypos);
-			/*	spr_tile_slice_ptr[15:13] = 0;
-				spr_tile_slice_ptr[12] = spr_base_rom;
-				spr_tile_slice_ptr[11:4] = spr_tile_index;
-				spr_tile_slice_ptr[3] = 0;*/
-				//spr_tile_slice_ptr[2:0] = (OAM[(spr_scan_iter << 2) + OAM_SPR_ATTR][7] ) ? 7 - spr_tile_slice : spr_tile_slice ;
-			/*	spr_rend_buf[spr_scan_rend_iter] = { 
-					OAM[(spr_scan_iter << 2) + OAM_SPR_ATTR],
-					OAM[(spr_scan_iter << 2) + OAM_SPR_XPOS], 
-					CHR_ROM[spr_tile_slice_ptr + 8],
-					CHR_ROM[spr_tile_slice_ptr]
-				};*/
-//				spr_rend_draw_flags[spr_scan_rend_iter] = 1;
-//				spr_scan_rend_iter = (spr_scan_rend_iter + 1 < 8) ? spr_scan_rend_iter + 1 : 8;
 			end else begin
 				spr_scan_iter = (spr_scan_iter + 1);
 			end
@@ -449,11 +433,6 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			if(pixel_x_next == 0) spr_scan_state <= SPR_SCAN_SCAN;
 		end 
 	endcase 
-=======
-	endcase
-	
-
->>>>>>> origin/background
 end
 
 // ================ SPRITE RENDER MODULES ==============
@@ -466,11 +445,11 @@ spr_rend spr_rend_4( PPU_SLOW_CLOCK, spr_rend_buf[4], pixel_x, spr_rend_draw_fla
 spr_rend spr_rend_5( PPU_SLOW_CLOCK, spr_rend_buf[5], pixel_x, spr_rend_draw_flags[5]&spr_scan_rend_now, spr_rend_draw_flags[5], spr_rend_pallete_colour[5], spr_rend_valid[5] );
 spr_rend spr_rend_6( PPU_SLOW_CLOCK, spr_rend_buf[6], pixel_x, spr_rend_draw_flags[6]&spr_scan_rend_now, spr_rend_draw_flags[6], spr_rend_pallete_colour[6], spr_rend_valid[6] );
 spr_rend spr_rend_7( PPU_SLOW_CLOCK, spr_rend_buf[7], pixel_x, spr_rend_draw_flags[7]&spr_scan_rend_now, spr_rend_draw_flags[7], spr_rend_pallete_colour[7], spr_rend_valid[7] );
-
+/*
 always_ff@(posedge PPU_SLOW_CLOCK) begin
 
 	case(bkg_draw_state2)
-	BUFF_SLICE_1: begin
+		BUFF_SLICE_1: begin
 		///////////////////////////////////// change when chr rom chopped in two
 			chr_ptr_0 = {4'b0001,NAME_TABLE_0[nt_ptr_next],1'b0,tile_row};
 			bg_slice_next[15:8] = CHR_ROM[chr_ptr_0];
@@ -484,7 +463,10 @@ always_ff@(posedge PPU_SLOW_CLOCK) begin
 		end
 		
 		IDLE: begin
+			if(bkg_draw_state == FETCHING)
+			bkg_draw_state2 <= BUFF_SLICE_1;
+			
 		end
 	endcase
-end
+end*/
 endmodule

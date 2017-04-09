@@ -48,7 +48,8 @@ module vga_fb(
 	input logic [7:0]pix_ptr_y,
 	output logic [8:0]rgb // format of RRRGGGBBB r is always gonna be msb
 );
-	logic [5:0]pixel_code[239:0][255:0];	// Frame buffer RAM
+//	logic [5:0]pixel_code[239:0][255:0];	// Frame buffer RAM
+
 	logic [5:0]pix;
 	logic [2:0]r; 
 	logic [2:0]g; 
@@ -61,11 +62,20 @@ module vga_fb(
 	
 	assign pix_ptr_y_clamp = pix_ptr_y > 239 ? 239: pix_ptr_y; 
 	assign ppu_ptr_y_clamp = ppu_ptr_y > 239 ? 239: ppu_ptr_y; 
+sc_dpram (
+	pix_clk,
+	ppu_DI,
+	{pix_ptr_y_clamp, pix_ptr_x}, // read address
+	{ppu_ptr_y_clamp, ppu_ptr_x}, //write address
+	'h1,
+	pix);
+	
+	
 	initial begin
 		$readmemh("vga_colours_rgb.txt",coloursDecode);
 	end 
 	
-	always_ff@(posedge pix_clk) begin
+	/*always_ff@(posedge pix_clk) begin
 	 pix = pixel_code[ppu_ptr_y_clamp][ppu_ptr_x];
 	end
 	
@@ -73,7 +83,7 @@ module vga_fb(
 	// PPU access (Write only)
 	always_ff@(posedge pix_clk) begin 
 			pixel_code[ppu_ptr_y_clamp][ppu_ptr_x] = ppu_ptr_x > 127?'h27:'h15;
-	end 
+	end */
 	assign dec = coloursDecode[pix];
 	// vga out access (Read only)
 	assign rgb = {dec[8:6],dec[5:3],dec[2:0]};

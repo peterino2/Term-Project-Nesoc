@@ -39,7 +39,7 @@ assign pallete_colour = {pallete, bmp_output};
 
 always_ff@(posedge rend_now)begin
 	pallete = {rend_buf[PS_MSB],rend_buf[PS_MSB]};
-	if(hflip) begin 
+	if(!(hflip)) begin 
 		for (i  = 0 ; i < 8; i++ )begin 
 			// LSB
 			bmp_data[i] = rend_buf[7 - i];

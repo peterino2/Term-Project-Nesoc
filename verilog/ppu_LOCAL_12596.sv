@@ -104,7 +104,7 @@ logic [9:0]pixel_x_next =0;  // x pixel for fsm
 logic [7:0]pixel_y=0;  // y pixel for fsm
 logic [7:0]pixel_y_next=0;  // y pixel for fsm
 
-logic [5:0]bkg_cdat=0; // output pixel data
+logic [5:0]cdat_out=0; // output pixel data
 integer i; // general integer for loops
 
 // ===========NT_0 ==========
@@ -181,7 +181,6 @@ logic [7:0]ATTR_TABLE_0[63:0];
 
 logic [7:0]NAME_TABLE_1[959:0];
 logic [7:0]ATTR_TABLE_1[63:0];
-logic [7:0] CHR_ROM ['h1FFF:0]; 
 
 // ============= PALLETES ================
 // 0-3 is pallete 0 
@@ -198,24 +197,24 @@ initial begin
 	// Auto generated test colours palletes
 	BKG_PALLETES[0] = 'h0F; // black
 	BKG_PALLETES[1] = 'h00; // grey
-	BKG_PALLETES[2] = 'h10; // blue
-	BKG_PALLETES[3] = 'h30; // red
+	BKG_PALLETES[2] = 'h01; // blue
+	BKG_PALLETES[3] = 'h05; // red
 	
 	BKG_PALLETES[4] = 'h0F; // black
-	BKG_PALLETES[5] = 'h01; // yellow
-	BKG_PALLETES[6] = 'h21; // green
-	BKG_PALLETES[7] = 'h31; // red
+	BKG_PALLETES[5] = 'h28; // yellow
+	BKG_PALLETES[6] = 'h2A; // green
+	BKG_PALLETES[7] = 'h16; // red
 	
 	BKG_PALLETES[8] = 'h0F; // black
-	BKG_PALLETES[9] = 'h20; // teal
-	BKG_PALLETES[10] = 'h36; // blue
-	BKG_PALLETES[11] = 'h06; // red
+	BKG_PALLETES[9] = 'h2C; // teal
+	BKG_PALLETES[10] = 'h12; // blue
+	BKG_PALLETES[11] = 'h16; // red
 	
 	BKG_PALLETES[12] = 'h0F; // black
-	BKG_PALLETES[13] = 'h2A; // orange
-	BKG_PALLETES[14] = 'h1A; // red
-	BKG_PALLETES[15] = 'h0A; // green
-	
+	BKG_PALLETES[13] = 'h27; // orange
+	BKG_PALLETES[14] = 'h06; // red
+	BKG_PALLETES[15] = 'h1A; // green
+		
 	SPR_PALLETES[0] = 'h0F; // black
 	SPR_PALLETES[1] = 'h00; // grey
 	SPR_PALLETES[2] = 'h01; // blue
@@ -237,9 +236,9 @@ initial begin
 	SPR_PALLETES[15] = 'h1A; // green
 
 
-	$readmemh("oam_test.dat", OAM);
-	$readmemh("NT_0.dat", NAME_TABLE_0);
-	$readmemh("AT_0.dat", ATTR_TABLE_0);
+	$readmemh("oam_test.dat", OAM);//
+	//$readmemh("NT_0.dat", NAMETABLE_0);
+	//$readmemh("AT_0.dat", ATTRTABLE_0);
 end 
 
 
@@ -262,26 +261,7 @@ end
 parameter FETCHING = 0;
 parameter PIPING = 1;
 parameter HALT = 2;
-parameter BUFF_SLICE_1 = 0;
-parameter BUFF_SLICE_2 = 1;
-parameter IDLE = 2;
 logic [2:0] bkg_draw_state = FETCHING;
-logic [2:0] bkg_draw_state2 = IDLE;
-
-logic [4:0] tile_x;		// tile x coordinate
-logic [4:0] tile_y;		// tile y coordinate 
-logic [2:0] tile_col;	// column within a tile
-logic [2:0] tile_row;	// row within a tile
-logic [9:0] nt_ptr;		// name table pointer
-logic [9:0] nt_ptr_next;// name table pointer for next tile
-logic [5:0] attr_ptr;	// attribute table pointer
-logic [15:0] bg_slice;	// two-bite background slice
-logic [15:0] bg_slice_next;	// two-bite background slice
-logic [3:0] pallete_ptr='0;// choose colour
-logic [15:0] chr_ptr_0;	// chr rom pointer
-logic [15:0] chr_ptr_1;	// chr rom pointer
-
-
 
 //===============================================
 //============ COMBINATIONAL BLOCK===============
@@ -295,19 +275,29 @@ assign VGA_STREAM_DATA = spr_cdat;
 
 always_comb begin 
 // ----------- PIXELS COUNT INCREMENT -----------
-	if (pixel_x == X_PIXELS-1) begin
-		pixel_y_next = (pixel_y == Y_PIXELS-1) ? 0 : pixel_y + 1;
-		pixel_x_next = 0;
-	end
-	else begin
-			pixel_x_next = pixel_x + 1;
-	end
+	pixel_x_next = (pixel_x + 1) < X_PIXELS ?  pixel_x + 1 : 0;
+	pixel_y_next = (pixel_x_next == X_PIXELS - 1)? 
+		(pixel_y == Y_PIXELS) ? 
+		0	:  pixel_y + 1
+		: pixel_y;
 // ----------- background draw state control ----
 	bkg_draw_state = (pixel_y < Y_BPORCH)
 		? (pixel_x[2:0] == 3'b0) ? 
 		FETCHING : PIPING  
 	: HALT;
-
+// ----------- spr_scan fsm state control -------
+/*
+	spr_scan_state_next = spr_scan_state;
+	case(spr_scan_state)
+		SPR_SCAN_SCAN:begin 
+			if(spr_scan_iter == 63)
+			spr_scan_state_next = SPR_SCAN_HALT;
+		end 
+		SPR_SCAN_HALT:begin 
+			if(pixel_x_next == 0)
+				spr_scan_state_next = 0;
+		end 
+	endcase*/
 // ------------ spr_draw_mux --------- 
 // Multi plexer for drawing the combined output of the sprites
 	spr_cdat = 'h0f;
@@ -317,44 +307,6 @@ always_comb begin
 		end
 	end 	
 end 
-// ------------ Tile coordinates ----------------
-	if (pixel_x < X_BPORCH && pixel_y < Y_BPORCH) begin
-		tile_x = pixel_x >> 3;
-		tile_y = pixel_y >> 3;
-		tile_col = pixel_x % 8;
-		tile_row = pixel_y % 8;
-		nt_ptr = tile_x + tile_y * 6'd32;
-		attr_ptr = (tile_x >> 2) + (tile_y >> 2) * 8;
-	end
-	
-// ------------ Output Colour -------------------
-	bkg_cdat = BKG_PALLETES[pallete_ptr];
-	pallete_ptr[1:0] = {bg_slice[15-tile_col],bg_slice[7-tile_col]};
-	
-// ------------ Attribute decode ----------------
-	if (tile_x % 4 < 2) begin 					// left side
-		if (tile_y % 4 < 2) begin 				//top-left
-		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][1:0];
-		end
-		else begin 								// bottom-left
-		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][5:4];
-		end
-	end
-	else begin									// right side
-		if (tile_y % 4 < 2) begin 				//top-right
-		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][3:2];
-		end
-		else begin 								// bottom-right
-		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][7:6];
-		end
-	end
-	
-// -------- Next tile pointer -------------------
-	nt_ptr_next = (nt_ptr == 10'd959) ? 0 : nt_ptr + 1;
-
-end 
-
-
 //===============================================
 //================ PER CLK BLOCK  ===============
 //===============================================
@@ -369,13 +321,9 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 	end 
 // NAMETABLE RENDER AND DRAW STATE 
 	case(bkg_draw_state)
-		FETCHING:begin
-			bg_slice = bg_slice_next;
-			bkg_draw_state2 <= BUFF_SLICE_1;
+		FETCHING:begin 
 		end 
-						
 		PIPING: begin 
-		
 		end 
 		HALT: begin 
 		end 
@@ -449,11 +397,6 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			if(pixel_x_next == 0) spr_scan_state <= SPR_SCAN_SCAN;
 		end 
 	endcase 
-=======
-	endcase
-	
-
->>>>>>> origin/background
 end
 
 // ================ SPRITE RENDER MODULES ==============
@@ -467,24 +410,5 @@ spr_rend spr_rend_5( PPU_SLOW_CLOCK, spr_rend_buf[5], pixel_x, spr_rend_draw_fla
 spr_rend spr_rend_6( PPU_SLOW_CLOCK, spr_rend_buf[6], pixel_x, spr_rend_draw_flags[6]&spr_scan_rend_now, spr_rend_draw_flags[6], spr_rend_pallete_colour[6], spr_rend_valid[6] );
 spr_rend spr_rend_7( PPU_SLOW_CLOCK, spr_rend_buf[7], pixel_x, spr_rend_draw_flags[7]&spr_scan_rend_now, spr_rend_draw_flags[7], spr_rend_pallete_colour[7], spr_rend_valid[7] );
 
-always_ff@(posedge PPU_SLOW_CLOCK) begin
 
-	case(bkg_draw_state2)
-	BUFF_SLICE_1: begin
-		///////////////////////////////////// change when chr rom chopped in two
-			chr_ptr_0 = {4'b0001,NAME_TABLE_0[nt_ptr_next],1'b0,tile_row};
-			bg_slice_next[15:8] = CHR_ROM[chr_ptr_0];
-			bkg_draw_state2 <= BUFF_SLICE_2;
-		end
-		
-		BUFF_SLICE_2: begin
-			chr_ptr_1 = {4'b0001,NAME_TABLE_0[nt_ptr_next],1'b1,tile_row};
-			bg_slice_next[7:0] = CHR_ROM[chr_ptr_1];
-			bkg_draw_state2 <= IDLE;
-		end
-		
-		IDLE: begin
-		end
-	endcase
-end
 endmodule

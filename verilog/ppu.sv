@@ -68,13 +68,6 @@ logic [7:0]pixel_y_next=0;  // y pixel for fsm
 
 logic [5:0]cdat_out=0; // output pixel data
 
-// ===========NT_0 ==========
-(*preserve*) logic [7:0] NAMETABLE_0[959:0];
-(*preserve*)logic [7:0] ATTRTABLE_0[63:0];
-// ============ OAM ==========
-(*preserve*)logic [7:0]OAM[255:0];
-// ========== CHR ROM =========
-(*preserve*)logic [7:0] CHR_ROM ['h1FFF:0]; // CHR ROM location
 
 // ========= BKG RENDERING ROM =================
 // Consists of name and attribute tables 
@@ -82,6 +75,7 @@ logic [7:0]NAME_TABLE_0[959:0];
 logic [7:0]ATTR_TABLE_0[63:0];
 logic [7:0]NAME_TABLE_1[959:0];
 logic [7:0]ATTR_TABLE_1[63:0];
+logic [7:0] CHR_ROM ['h1FFF:0]; 
 
 // ============= PALLETES ================
 // 0-3 is pallete 0 
@@ -98,6 +92,25 @@ initial begin
 	// Auto generated test colours palletes
 	BKG_PALLETES[0] = 'h0F; // black
 	BKG_PALLETES[1] = 'h00; // grey
+	BKG_PALLETES[2] = 'h10; // blue
+	BKG_PALLETES[3] = 'h30; // red
+	
+	BKG_PALLETES[4] = 'h0F; // black
+	BKG_PALLETES[5] = 'h01; // yellow
+	BKG_PALLETES[6] = 'h21; // green
+	BKG_PALLETES[7] = 'h31; // red
+	
+	BKG_PALLETES[8] = 'h0F; // black
+	BKG_PALLETES[9] = 'h20; // teal
+	BKG_PALLETES[10] = 'h36; // blue
+	BKG_PALLETES[11] = 'h06; // red
+	
+	BKG_PALLETES[12] = 'h0F; // black
+	BKG_PALLETES[13] = 'h2A; // orange
+	BKG_PALLETES[14] = 'h1A; // red
+	BKG_PALLETES[15] = 'h0A; // green
+/*	BKG_PALLETES[0] = 'h0F; // black
+	BKG_PALLETES[1] = 'h00; // grey
 	BKG_PALLETES[2] = 'h01; // blue
 	BKG_PALLETES[3] = 'h05; // red
 	BKG_PALLETES[4] = 'h0F; // black
@@ -111,7 +124,9 @@ initial begin
 	BKG_PALLETES[12] = 'h0F; // black
 	BKG_PALLETES[13] = 'h27; // orange
 	BKG_PALLETES[14] = 'h06; // red
-	BKG_PALLETES[15] = 'h1A; // green
+	BKG_PALLETES[15] = 'h1A; // green 
+	
+	
 
 		
 	BKG_PALLETES[0] = 'h0F; // black
@@ -129,12 +144,12 @@ initial begin
 	BKG_PALLETES[12] = 'h0F; // black
 	BKG_PALLETES[13] = 'h27; // orange
 	BKG_PALLETES[14] = 'h06; // red
-	BKG_PALLETES[15] = 'h1A; // green
+	BKG_PALLETES[15] = 'h1A; // green */
 
 
 	//$readmemh("OAM_TEST.dat", OAM); Currently testing Background and Name table rendering so
-	//$readmemh("NT_0.dat", NAMETABLE_0);
-	//$readmemh("AT_0.dat", ATTRTABLE_0);
+	$readmemh("NT_0.dat", NAME_TABLE_0);
+	$readmemh("AT_0.dat", ATTR_TABLE_0);
 end 
 
 
@@ -157,24 +172,90 @@ end
 parameter FETCHING = 0;
 parameter PIPING = 1;
 parameter HALT = 2;
+parameter BUFF_SLICE_1 = 0;
+parameter BUFF_SLICE_2 = 1;
+parameter IDLE = 2;
 logic [2:0] bkg_draw_state = FETCHING;
+logic [2:0] bkg_draw_state2 = IDLE;
+
+logic [4:0] tile_x;		// tile x coordinate
+logic [4:0] tile_y;		// tile y coordinate 
+logic [2:0] tile_col;	// column within a tile
+logic [2:0] tile_row;	// row within a tile
+logic [9:0] nt_ptr;		// name table pointer
+logic [9:0] nt_ptr_next;// name table pointer for next tile
+logic [5:0] attr_ptr;	// attribute table pointer
+logic [15:0] bg_slice;	// two-bite background slice
+logic [15:0] bg_slice_next;	// two-bite background slice
+logic [3:0] pallete_ptr='0;// choose colour
+logic [15:0] chr_ptr_0;	// chr rom pointer
+logic [15:0] chr_ptr_1;	// chr rom pointer
+
+
 
 //===============================================
 //============ COMBINATIONAL BLOCK===============
 //===============================================
 always_comb begin 
 // ----------- PIXELS COUNT INCREMENT -----------
-	pixel_x_next = pixel_x + 1;
+/*	pixel_x_next = pixel_x + 1;
 	pixel_y_next = (pixel_x_next == X_PIXELS)? 
 		(pixel_y == Y_PIXELS) ? 
 		0	:  pixel_y + 1
 		: pixel_y;
+*/	
+	if (pixel_x == X_PIXELS-1) begin
+		pixel_y_next = (pixel_y == Y_PIXELS-1) ? 0 : pixel_y + 1;
+		pixel_x_next = 0;
+	end
+	else begin
+			pixel_x_next = pixel_x + 1;
+	end
 // ----------- background draw state control ----
 	bkg_draw_state = (pixel_y < Y_BPORCH)
 		? ('{pixel_x[2:0]} == 3'b0) ? 
 		FETCHING : PIPING  
 	: HALT;
+	
+// ------------ Tile coordinates ----------------
+	if (pixel_x < X_BPORCH && pixel_y < Y_BPORCH) begin
+		tile_x = pixel_x >> 3;
+		tile_y = pixel_y >> 3;
+		tile_col = pixel_x % 8;
+		tile_row = pixel_y % 8;
+		nt_ptr = tile_x + tile_y * 6'd32;
+		attr_ptr = (tile_x >> 2) + (tile_y >> 2) * 8;
+	end
+	
+// ------------ Output Colour -------------------
+	cdat_out = BKG_PALLETES[pallete_ptr];
+	pallete_ptr[1:0] = {bg_slice[15-tile_col],bg_slice[7-tile_col]};
+	
+// ------------ Attribute decode ----------------
+	if (tile_x % 4 < 2) begin 					// left side
+		if (tile_y % 4 < 2) begin 				//top-left
+		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][1:0];
+		end
+		else begin 								// bottom-left
+		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][5:4];
+		end
+	end
+	else begin									// right side
+		if (tile_y % 4 < 2) begin 				//top-right
+		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][3:2];
+		end
+		else begin 								// bottom-right
+		pallete_ptr[3:2] = ATTR_TABLE_0[attr_ptr][7:6];
+		end
+	
+	end
+	
+// -------- Next tile pointer -------------------
+	nt_ptr_next = (nt_ptr == 10'd959) ? 0 : nt_ptr + 1;
+
 end 
+
+
 
 //===============================================
 //================ PER CLK BLOCK  ===============
@@ -189,19 +270,41 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 		pixel_y <= pixel_y_next;
 	end
 // NAMETABLE RENDER AND DRAW STATE 
-	case(bkg_draw_state) begin 
+	case(bkg_draw_state)
 		FETCHING:begin 
-			
+			bg_slice = bg_slice_next;
+			bkg_draw_state2 <= BUFF_SLICE_1;
 		end 
+						
 		PIPING: begin 
+		
 		end 
 		HALT: begin 
 		end 
-	end 
+	endcase
 	
 
 end
 
 
+always_ff@(posedge PPU_SLOW_CLOCK) begin
 
+	case(bkg_draw_state2)
+	BUFF_SLICE_1: begin
+		///////////////////////////////////// change when chr rom chopped in two
+			chr_ptr_0 = {4'b0001,NAME_TABLE_0[nt_ptr_next],1'b0,tile_row};
+			bg_slice_next[15:8] = CHR_ROM[chr_ptr_0];
+			bkg_draw_state2 <= BUFF_SLICE_2;
+		end
+		
+		BUFF_SLICE_2: begin
+			chr_ptr_1 = {4'b0001,NAME_TABLE_0[nt_ptr_next],1'b1,tile_row};
+			bg_slice_next[7:0] = CHR_ROM[chr_ptr_1];
+			bkg_draw_state2 <= IDLE;
+		end
+		
+		IDLE: begin
+		end
+	endcase
+end
 endmodule

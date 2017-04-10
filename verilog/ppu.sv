@@ -164,9 +164,14 @@ parameter SPR_SCAN_HALT = 1;
 parameter SPR_REND_FETCH_TILE_LSB=2;
 parameter SPR_REND_FETCH_ATTR =3;
 parameter SPR_REND_FETCH_DRAW_MSB=4;
+parameter SPR_ANIM_TB_0 = 5;
+parameter SPR_ANIM_TB_1 = 6;
+parameter SPR_ANIM_TB_2 = 7;
+parameter SPR_ANIM_TB_3 = 8;
+
 logic [7:0] spr_draw_priority = 0;
 logic spr_cdat_fg;
-logic [2:0] spr_scan_state = SPR_SCAN_SCAN;
+logic [3:0] spr_scan_state = SPR_SCAN_SCAN;
 logic [2:0] spr_scan_state_next;
 logic [7:0] spr_scan_iter = 0;
 logic [2:0] spr_scan_rend_iter = 0;
@@ -199,24 +204,24 @@ initial begin
 	$readmemh("CHR_ROM1.dat", CHR_ROM_1);
 	// Auto generated test colours palletes
 	BKG_PALLETES[0] = 'h0F; // black
-	BKG_PALLETES[1] = 'h30; // white
-	BKG_PALLETES[2] = 'h36; // pink
-	BKG_PALLETES[3] = 'h06; // brown
+	BKG_PALLETES[1] = 'h15; // white
+	BKG_PALLETES[2] = 'h2c; // pink
+	BKG_PALLETES[3] = 'h12; // brown
 	
 	BKG_PALLETES[4] = 'h0F; // black
-	BKG_PALLETES[5] = 'h30; // white
-	BKG_PALLETES[6] = 'h2c; // turquoise?
-	BKG_PALLETES[7] = 'h24; // pinkier pink
+	BKG_PALLETES[5] = 'h27; // white
+	BKG_PALLETES[6] = 'h02; // turquoise?
+	BKG_PALLETES[7] = 'h17; // pinkier pink
 	
 	BKG_PALLETES[8] = 'h0F; // black
-	BKG_PALLETES[9] = 'h16; // light brown
-	BKG_PALLETES[10] = 'h30; // white
-	BKG_PALLETES[11] = 'h37; // white people
+	BKG_PALLETES[9] = 'h30; // light brown
+	BKG_PALLETES[10] = 'h36; // white
+	BKG_PALLETES[11] = 'h06; // white people
 	
 	BKG_PALLETES[12] = 'h0F; // black
-	BKG_PALLETES[13] = 'h06; // brown
-	BKG_PALLETES[14] = 'h27; // orange
-	BKG_PALLETES[15] = 'h02; // blue
+	BKG_PALLETES[13] = 'h30; // brown
+	BKG_PALLETES[14] = 'h2c; // orange
+	BKG_PALLETES[15] = 'h24; // blue
 	
 	SPR_PALLETES[0] = 'h0F; // black
 	SPR_PALLETES[1] = 'h02; // grey
@@ -240,8 +245,8 @@ initial begin
 
 
 	$readmemh("oam_test.dat", OAM);
-	$readmemh("NT_0.dat", NAME_TABLE_0);
-	$readmemh("AT_0.dat", ATTR_TABLE_0);
+	$readmemh("dkimage_NT_0.dat", NAME_TABLE_0);
+	$readmemh("dkimage_AT_0.dat", ATTR_TABLE_0);
 end 
 
 
@@ -375,15 +380,15 @@ always_comb begin
 	if(spr_cdat_fg&& (spr_cdat_pri || (pallete_ptr[1:0] == 0))) draw_cdat = spr_cdat;
 
 end 
-
-
 //===============================================
 //================ PER CLK BLOCK  ===============
 //===============================================
-
+logic [7:0] frame_num = 0;
+logic [31:0] frame_count = 0;
 always_ff@(posedge PPU_SLOW_CLOCK)begin 
 	pixel_x <= pixel_x_next;
 	pixel_y <= pixel_y_next;
+	frame_count = (frame_count + 1 ) > 1000000 ? 1000000 : frame_count + 1;
 // NAMETABLE RENDER AND DRAW STATE 
 	case(bkg_draw_state)
 		FETCHING:begin
@@ -451,6 +456,26 @@ always_ff@(posedge PPU_SLOW_CLOCK)begin
 			spr_scan_rend_iter = 0;
 			spr_scan_rend_now = 0;
 			if(pixel_x_next == 0) spr_scan_state <= SPR_SCAN_SCAN;
+			if(frame_count == 1000000) spr_scan_state <= SPR_ANIM_TB_0;
+		end 
+		SPR_ANIM_TB_0: begin 
+			OAM[(0 << 2) +OAM_SPR_INDX ] = (frame_num << 2) + 0;
+			spr_scan_state = SPR_ANIM_TB_1;
+		end 
+		SPR_ANIM_TB_1: begin 
+			OAM[(1 << 2) +OAM_SPR_INDX ] = (frame_num << 2) + 1;
+			spr_scan_state = SPR_ANIM_TB_2;
+		end 
+		SPR_ANIM_TB_2: begin 
+			OAM[(2 << 2) +OAM_SPR_INDX ] = (frame_num << 2) + 2;
+			spr_scan_state = SPR_ANIM_TB_3;
+			
+		end 
+		SPR_ANIM_TB_3: begin 
+			OAM[(3 << 2) +OAM_SPR_INDX ] = (frame_num << 2) + 3;
+			frame_num = (frame_num + 1 ) % 5;
+			spr_scan_state = SPR_SCAN_HALT;
+			frame_count = 0;
 		end 
 	endcase 
 end

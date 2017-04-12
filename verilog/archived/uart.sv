@@ -1,8 +1,7 @@
-// uart.sv
+// uart.sv - Peter Li ( this module is not used in the current project )
 
 /*
 	simple uart module used as a general purpose Comms channel with the FPGA
-	We kinda need this for programming and controller anyway
 	
 	use USB to FTDI Card.
 	
@@ -22,45 +21,12 @@
 	simply connect your UART signal to uart-port-DI
 	
 	tx data can be sent by writing to the buffer then incrementing the send_ptr,
-	(in that order ) streams can be prepared by by holding tx_clear high and writing
-	to tx_buf via send_ptr then the stream can be bursted out by resetting tx_clear 
-	the data will be streamed from memory locations $0 to $(send_ptr - 1)
-	though you can just write normally and it will still work becasuse the processing 
-	clock will be much faster than the uart baud 
 	
 	available data will be present in the 64kB buffer, this is dereferenced via the read_ptr
 	
 	to prevent buffer from overflowing hold CLEAR signal high 
 	to read after X number of bits are available set read_ptr
 	to X and wait for read_valid 
-	
-	-------- an example for rx --------
-	uart_port p1(.*);
-	assumming uart_port_DI is connected to a pin recieving
-	a uart signal at the above specifications,
-	
-	data is instantly available at $0 of the buffer after the 
-	first 8 bit are passed in, subsequent bits are stored in
-	an increasing manner in the buffer. (EG passing in the 
-	stream "ABCDE") will store the following in memory
-	
-	$0 = A
-	$1 = B
-	etc ...
-	
-	the valid flag can be used to check if the memory location
-	you are reading from has been written to by the pointer yet
-	during this current frame. This can be useful to see if 
-	a certain size of data has been recieved yet. EG if you 
-	wanted to wait until exactly 256 bytes of data has been 
-	recieved, you would set read_ptr to 255 then watch the 
-	read_valid line until it goes high, at which point you 
-	can parse the buffer from 0-255.
-	
-	by setting clear, the dataframe can be reset,
-	the rx_ptr will go back to zero and new information will 
-	overwrite the previous information
-	
 */
 
 

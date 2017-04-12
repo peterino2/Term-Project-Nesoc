@@ -34,8 +34,8 @@ always begin
 end
 
 initial begin 
-	#800us;
-	$stop;
+	#8000us;
+h	$stop;
 end 
 ppu_core ppu(.*);
 

@@ -100,3 +100,6 @@ verilog/work/_lib1_12.qtl
 verilog/work/_lib1_13.qdb
 verilog/work/_lib1_13.qpg
 verilog/work/_lib1_13.qtl
+verilog/work/*
+verilog/ppu_*
+verilog/*.mpf # dont bring modelsim into this man...

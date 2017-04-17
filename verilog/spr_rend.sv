@@ -38,7 +38,7 @@ logic [1:0] bmp[7:0];
 assign pallete_colour = {pallete, bmp_output};
 
 always_ff@(posedge rend_now)begin
-	pallete = {rend_buf[PS_MSB],rend_buf[PS_MSB]};
+	pallete = {rend_buf[PS_MSB],rend_buf[PS_LSB]};
 	if(!(hflip)) begin 
 		for (i  = 0 ; i < 8; i++ )begin 
 			// LSB
